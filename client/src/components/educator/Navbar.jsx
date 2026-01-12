@@ -86,7 +86,7 @@ const Navbar = () => {
       "
     >
       {/* Logo */}
-      <Link to="/educator">
+      <Link to="/">
         <img
           src={assets.academix_logo}
           alt="logo"

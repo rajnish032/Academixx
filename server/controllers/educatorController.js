@@ -15,6 +15,15 @@ export const updateRoleToEducator = async (req, res) => {
       });
     }
 
+    //role already educator → do nothing
+    if (user.role === "educator") {
+      return res.json({
+        success: true,
+        message: "Already an educator",
+      });
+    }
+
+    // update role only once
     user.role = "educator";
     await user.save();
 
@@ -29,6 +38,7 @@ export const updateRoleToEducator = async (req, res) => {
     });
   }
 };
+
 
 /* ================= ADD NEW COURSE ================= */
 export const addCourse = async (req, res) => {

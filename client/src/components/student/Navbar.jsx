@@ -1,5 +1,3 @@
-
-
 // import React, { useContext } from 'react'
 // import { assets } from '../../assets/assets';;
 // import { Link } from 'react-router-dom';
@@ -12,7 +10,7 @@
 
 //   const { navigate , isEducator, backendUrl, setIsEducator, getToken} = useContext(AppContext);
 //   const isCourseList = location.pathname.includes('/course-list');
-  
+
 //   const { openSignIn } = useClerk()
 //   const {user} = useClerk()
 
@@ -37,11 +35,9 @@
 //     }
 //   }
 
-
-
 //   return (
 //   <div
-//     className="flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 
+//     className="flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36
 //                py-4 bg-black border-b border-white/10 backdrop-blur-xl"
 //   >
 //     {/* Logo */}
@@ -79,7 +75,7 @@
 //       ) : (
 //         <button
 //           onClick={() => openSignIn()}
-//           className="bg-cyan-500 text-black px-5 py-2 rounded-full text-sm font-medium 
+//           className="bg-cyan-500 text-black px-5 py-2 rounded-full text-sm font-medium
 //                      hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/30"
 //         >
 //           Create Account
@@ -120,7 +116,6 @@
 //   </div>
 // );
 
-
 // }
 
 // export default Navbar;
@@ -140,6 +135,7 @@ const Navbar = () => {
     setIsEducator,
     userData,
     setUserData,
+    fetchUserData,
   } = useContext(AppContext);
 
   const location = useLocation();
@@ -148,7 +144,11 @@ const Navbar = () => {
   /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     try {
-      await axios.post(`${backendUrl}/api/auth/logout`, {}, { withCredentials: true });
+      await axios.post(
+        `${backendUrl}/api/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
       setUserData(null);
       setIsEducator(false);
       toast.success("Logged out successfully");
@@ -158,35 +158,36 @@ const Navbar = () => {
     }
   };
 
-  /* ================= BECOME EDUCATOR ================= */
   const becomeEducator = async () => {
-    try {
-      if (isEducator) {
-        navigate("/educator");
-        return;
-      }
+    // ✅ already educator → no API call
+    if (userData?.role === "educator") {
+      navigate("/educator");
+      return;
+    }
 
-      const { data } = await axios.post(
+    try {
+      const { data } = await axios.get(
         `${backendUrl}/api/educator/update-role`,
-        {},
         { withCredentials: true }
       );
 
       if (data.success) {
-        setIsEducator(true);
+        await fetchUserData(); // refresh role
         toast.success(data.message);
         navigate("/educator");
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Action failed");
+      toast.error(error.response?.data?.message || error.message);
     }
   };
 
   return (
-    <div className="flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 
-                    py-4 bg-black border-b border-white/10 backdrop-blur-xl">
+    <div
+      className="flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 
+                    py-4 bg-black border-b border-white/10 backdrop-blur-xl"
+    >
       {/* Logo */}
       <img
         onClick={() => navigate("/")}
@@ -203,28 +204,42 @@ const Navbar = () => {
               onClick={becomeEducator}
               className="hover:text-cyan-400 transition"
             >
-              {isEducator ? "Educator Dashboard" : "Become Educator"}
+              {userData.role === "educator"
+                ? "Educator Dashboard"
+                : "Become Educator"}
             </button>
 
-            <Link to="/my-enrollments" className="hover:text-cyan-400 transition">
+            <Link
+              to="/my-enrollments"
+              className="hover:text-cyan-400 transition"
+            >
               My Enrollments
             </Link>
+
+            {/* ✅ NAME AFTER ENROLLMENTS */}
+            <p className="text-sm">
+              Hi!{" "}
+              <span className="font-semibold text-cyan-400">
+                {userData.firstName} {userData.lastName}
+              </span>
+            </p>
+
+            {/* LOGOUT */}
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-4 py-2 rounded-full text-sm 
+                   hover:bg-red-400 transition"
+            >
+              Logout
+            </button>
           </>
         )}
 
-        {userData ? (
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded-full text-sm 
-                       hover:bg-red-400 transition"
-          >
-            Logout
-          </button>
-        ) : (
+        {!userData && (
           <button
             onClick={() => navigate("/login")}
             className="bg-cyan-500 text-black px-5 py-2 rounded-full text-sm font-medium 
-                       hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/30"
+                 hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/30"
           >
             Login / Signup
           </button>
@@ -235,16 +250,14 @@ const Navbar = () => {
       <div className="md:hidden flex items-center gap-3 text-gray-200">
         {userData && (
           <>
-            <button
-              onClick={becomeEducator}
+            <Link
+              to="/my-enrollments"
               className="hover:text-cyan-400 transition text-xs"
             >
-              {isEducator ? "Dashboard" : "Educator"}
-            </button>
-
-            <Link to="/my-enrollments" className="hover:text-cyan-400 transition text-xs">
               Enrollments
             </Link>
+
+            <p className="text-xs text-cyan-400">Hi {userData.firstName}</p>
           </>
         )}
 

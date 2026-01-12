@@ -301,6 +301,7 @@ export const AppContextProvider = (props) => {
     calculateCourseDuration,
     calculateNoOfLectures,
     authLoading,
+    fetchUserData,
   };
 
   return (

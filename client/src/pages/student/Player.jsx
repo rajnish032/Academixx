@@ -15,7 +15,6 @@ const Player = () => {
     enrolledCourses,
     calculateChapterTime,
     backendUrl,
-    getToken,
     userData,
     fetchUserEnrolledCourses,
   } = useContext(AppContext);
@@ -59,12 +58,10 @@ const Player = () => {
 
   const markLectureAsCompleted = async (lectureId) => {
     try {
-      const token = await getToken();
-
       const { data } = await axios.post(
         backendUrl + "/api/user/update-course-progress",
         { courseId, lectureId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
 
       if (data.success) {
@@ -78,24 +75,32 @@ const Player = () => {
     }
   };
 
-  const getYouTubeId = (url) => {
-  try {
-    const parsedUrl = new URL(url);
-    return parsedUrl.searchParams.get("v");
-  } catch {
-    return null;
-  }
+//   const getYouTubeId = (url) => {
+//   try {
+//     const parsedUrl = new URL(url);
+//     return parsedUrl.searchParams.get("v");
+//   } catch {
+//     return null;
+//   }
+// };
+
+const getYouTubeId = (url) => {
+  if (!url) return null;
+
+  const regex =
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+
+  const match = url.match(regex);
+  return match ? match[1] : null;
 };
 
 
   const getCourseProgress = async () => {
     try {
-      const token = await getToken();
-
       const { data } = await axios.post(
         backendUrl + "/api/user/get-course-progress",
         { courseId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true  }
       );
 
       if (data.success) {
@@ -110,12 +115,10 @@ const Player = () => {
 
   const handleRate = async (rating) => {
     try {
-      const token = await getToken();
-
       const { data } = await axios.post(
         backendUrl + "/api/user/add-rating",
         { courseId, rating },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { withCredentials: true }
       );
 
       if (data.success) {
