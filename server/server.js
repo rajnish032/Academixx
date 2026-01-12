@@ -19,7 +19,7 @@ await connectDB();
 /* ================= CORS ================= */
 app.use(
   cors({
-    origin: true,           // frontend URL in production
+    origin: process.env.FRONTEND_URL,           // frontend URL in production
     credentials: true,      // REQUIRED for cookies
   })
 );
