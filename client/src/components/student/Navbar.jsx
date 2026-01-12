@@ -166,7 +166,7 @@ const Navbar = () => {
     }
 
     try {
-      const { data } = await axios.get(
+      const { data } = await axios.post(
         `${backendUrl}/api/educator/update-role`,
         { withCredentials: true }
       );
