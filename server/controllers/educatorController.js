@@ -3,7 +3,6 @@ import cloudinary from "../utils/cloudinary.js";
 import Purchase from "../models/purchase.js";
 import User from "../models/user.js";
 
-/* ================= UPDATE ROLE TO EDUCATOR ================= */
 export const updateRoleToEducator = async (req, res) => {
   try {
     const user = req.user;
@@ -11,25 +10,33 @@ export const updateRoleToEducator = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized: login please",
+        message: "Unauthorized",
       });
     }
 
-    //role already educator → do nothing
+    // already approved educator
     if (user.role === "educator") {
       return res.json({
         success: true,
-        message: "Already an educator",
+        message: "You are already an educator",
       });
     }
 
-    // update role only once
-    user.role = "educator";
+    // already applied
+    if (user.role === "pending") {
+      return res.json({
+        success: true,
+        message: "Application already submitted. Please wait for approval.",
+      });
+    }
+
+    // submit educator request
+    user.role = "pending";
     await user.save();
 
     return res.json({
       success: true,
-      message: "You can publish a course now",
+      message: "Application submitted successfully. Please wait for admin approval.",
     });
   } catch (error) {
     return res.status(500).json({
@@ -167,6 +174,103 @@ export const getEnrolledStudentsData = async (req, res) => {
     res.json({ success: true, enrolledStudents });
   } catch (error) {
     console.error("getEnrolledStudentsData error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+export const updateCourse = async (req, res) => {
+  try {
+    const { courseId, courseData } = req.body;
+    const imageFile = req.file;
+
+    const educatorId = req.educatorId;
+
+    if (!courseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Course ID is required",
+      });
+    }
+
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    // 🔐 Security: only creator can update
+    if (course.educator.toString() !== educatorId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to update this course",
+      });
+    }
+
+    const parsedCourseData = JSON.parse(courseData);
+
+    // 🔄 Update fields
+    course.courseTitle = parsedCourseData.courseTitle;
+    course.courseDescription = parsedCourseData.courseDescription;
+    course.coursePrice = parsedCourseData.coursePrice;
+    course.discount = parsedCourseData.discount;
+    course.courseContent = parsedCourseData.courseContent;
+
+    // 🖼 Update thumbnail only if new image is provided
+    if (imageFile) {
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path);
+      course.courseThumbnail = imageUpload.secure_url;
+    }
+
+    await course.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Course updated successfully",
+    });
+  } catch (error) {
+    console.error("updateCourse error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
+  }
+};
+
+
+export const getEducatorCourseById = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const educatorId = req.educatorId;
+
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    // 🔐 security
+    if (course.educator.toString() !== educatorId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    res.json({
+      success: true,
+      course,
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message,

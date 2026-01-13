@@ -30,8 +30,7 @@ export const getCourseId = async (req, res) => {
       });
     }
 
-    /* 🔐 Hide lecture URLs for non-preview lectures */
-    const course = courseData.toObject(); // important (avoid mutating mongoose doc)
+    const course = courseData.toObject();
 
     course.courseContent.forEach((chapter) => {
       chapter.chapterContent.forEach((lecture) => {

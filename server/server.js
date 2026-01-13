@@ -13,26 +13,17 @@ import userRouter from "./routes/user.js";
 
 const app = express();
 
-/* ================= DB ================= */
 await connectDB();
 
-/* ================= CORS ================= */
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,           // frontend URL in production
-    credentials: true,      // REQUIRED for cookies
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
   })
 );
 
 /* ================= STRIPE WEBHOOK ================= */
-/* ⚠️ MUST be before express.json() */
-app.post(
-  "/stripe",
-  express.raw({ type: "application/json" }),
-  stripeWebhooks
-);
-
-/* ================= MIDDLEWARE ================= */
+app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -44,7 +35,6 @@ app.use("/api/educator", educatorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
 
-/* ================= SERVER ================= */
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {

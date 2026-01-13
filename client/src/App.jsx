@@ -18,13 +18,14 @@ import { ToastContainer } from 'react-toastify';
 import { AppContext } from "./context/AppContext.jsx";
 import Login from './pages/auth/Login.jsx';
 import Signup from './pages/auth/SignUp.jsx';
+import EditCourse from './pages/educator/EditCourse.jsx';
 
 
 // Protects routes for logged-in users
 const PrivateRoute = ({ children }) => {
   const { userData, authLoading } = useContext(AppContext);
 
-  if (authLoading) return <div>Loading...</div>;
+  if (authLoading) return <div><Loading /></div>;
   return userData ? children : <Navigate to="/login" />;
 };
 
@@ -32,7 +33,7 @@ const PrivateRoute = ({ children }) => {
 const EducatorRoute = ({ children }) => {
   const { userData, authLoading } = useContext(AppContext);
 
-  if (authLoading) return <div>Loading...</div>;
+  if (authLoading) return <div><Loading /></div>;
   if (!userData) return <Navigate to="/login" />;
   if (userData.role !== "educator") return <Navigate to="/" />;
 
@@ -55,8 +56,6 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         
-        {/* <Route path="/my-enrollments" element={< MyEnrollment />} />
-        <Route path="/player/:courseId" element={<Player />} /> */}
         
         <Route path="/my-enrollments" element={<PrivateRoute><MyEnrollment /></PrivateRoute> }/>
         <Route path="/player/:courseId" element={ <PrivateRoute> <Player /> </PrivateRoute>}/>
@@ -64,13 +63,9 @@ const App = () => {
 
         <Route path="/educator" element={ <EducatorRoute> <Educator /> </EducatorRoute> }>
 
-          {/* <Route path='/educator' element={<Dashboard />} />
-          <Route path="add-course" element={<AddCourse />} />
-          <Route path="my-courses" element={<MyCourses />} />
-          <Route path="student-enrolled" element={<StudentsEnrolled />} /> */}
-
           <Route index element={<Dashboard />} />
           <Route path="add-course" element={<AddCourse />} />
+          <Route path="edit-course/:courseId" element={<EditCourse />} />
           <Route path="my-courses" element={<MyCourses />} />
           <Route path="student-enrolled" element={<StudentsEnrolled />} />
         

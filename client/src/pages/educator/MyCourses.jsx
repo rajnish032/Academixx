@@ -3,10 +3,13 @@ import { AppContext } from '../../context/AppContext';
 import Loading from '../../components/student/Loading';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const MyCourses = () => {
   const { currency, backendUrl} = useContext(AppContext);
   const [courses, setCourses] = useState(null);
+  const navigate = useNavigate();
+
 
   const fetchEducatorCourses = async () => {
     try {
@@ -55,6 +58,7 @@ const MyCourses = () => {
                 <th className="px-4 py-3 font-semibold truncate">Earnings</th>
                 <th className="px-4 py-3 font-semibold truncate">Students</th>
                 <th className="px-4 py-3 font-semibold truncate">Published On</th>
+                <th className="px-4 py-3 font-semibold truncate">Action</th>
               </tr>
             </thead>
 
@@ -100,6 +104,17 @@ const MyCourses = () => {
                     <td className="px-4 py-3">
                       {new Date(course.createdAt).toLocaleDateString()}
                     </td>
+                    <td className="px-4 py-3">
+  <button
+    onClick={() => navigate(`/educator/edit-course/${course._id}`)}
+    className="px-3 py-1.5 rounded-md text-sm
+               bg-cyan-500/90 hover:bg-cyan-400
+               text-black transition"
+  >
+    Update
+  </button>
+</td>
+
                   </tr>
                 );
               })}

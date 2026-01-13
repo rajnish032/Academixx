@@ -1,145 +1,17 @@
-// import React, { useContext } from 'react'
-// import { assets } from '../../assets/assets';;
-// import { Link } from 'react-router-dom';
-// import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
-// import { AppContext } from '../../context/AppContext';
-// import axios from 'axios';
-// import { toast } from 'react-toastify';
-
-// const Navbar = () => {
-
-//   const { navigate , isEducator, backendUrl, setIsEducator, getToken} = useContext(AppContext);
-//   const isCourseList = location.pathname.includes('/course-list');
-
-//   const { openSignIn } = useClerk()
-//   const {user} = useClerk()
-
-//   const becomeEducator = async ()=> {
-//     try {
-//       if(isEducator){
-//         navigate('/educator')
-//         return;
-//       }
-//       const token = await getToken()
-//       const { data } = await axios.get(backendUrl+'/api/educator/update-role',
-//         {headers: {Authorization: `Bearer ${token}`}}
-//       )
-//       if(data.success){
-//         setIsEducator(true)
-//         toast.success(data.message)
-//       }else{
-//         toast.error(data.message)
-//       }
-//     } catch (error) {
-//       toast.error(error.message)
-//     }
-//   }
-
-//   return (
-//   <div
-//     className="flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36
-//                py-4 bg-black border-b border-white/10 backdrop-blur-xl"
-//   >
-//     {/* Logo */}
-//     <img
-//       onClick={() => navigate('/')}
-//       src={assets.academix_logo}
-//       alt="logo"
-//       className="w-28 lg:w-32 h-12 object-cover cursor-pointer"
-//     />
-
-//     {/* Desktop Menu */}
-//     <div className="hidden md:flex items-center gap-6 text-gray-200">
-//       <div className="flex items-center gap-6">
-//         {user && (
-//           <>
-//             <button
-//               className="cursor-pointer hover:text-cyan-400 transition"
-//               onClick={becomeEducator}
-//             >
-//               {isEducator ? 'Educator Dashboard' : 'Become Educator'}
-//             </button>
-
-//             <Link
-//               to="/my-enrollments"
-//               className="hover:text-cyan-400 transition"
-//             >
-//               My Enrollments
-//             </Link>
-//           </>
-//         )}
-//       </div>
-
-//       {user ? (
-//         <UserButton />
-//       ) : (
-//         <button
-//           onClick={() => openSignIn()}
-//           className="bg-cyan-500 text-black px-5 py-2 rounded-full text-sm font-medium
-//                      hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/30"
-//         >
-//           Create Account
-//         </button>
-//       )}
-//     </div>
-
-//     {/* Mobile Menu */}
-//     <div className="md:hidden flex items-center gap-3 text-gray-200">
-//       <div className="flex items-center gap-2 max-sm:text-xs">
-//         {user && (
-//           <>
-//             <button
-//               onClick={becomeEducator}
-//               className="hover:text-cyan-400 transition"
-//             >
-//               {isEducator ? 'Educator Dashboard' : 'Become Educator'}
-//             </button>
-
-//             <Link
-//               to="/my-enrollments"
-//               className="hover:text-cyan-400 transition"
-//             >
-//               My Enrollments
-//             </Link>
-//           </>
-//         )}
-//       </div>
-
-//       {user ? (
-//         <UserButton />
-//       ) : (
-//         <button onClick={() => openSignIn()}>
-//           <img src={assets.user_icon} alt="user" className="w-6 h-6" />
-//         </button>
-//       )}
-//     </div>
-//   </div>
-// );
-
-// }
-
-// export default Navbar;
-
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../../assets/assets";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import ProfileDrawer from "./Profile";
 
 const Navbar = () => {
-  const {
-    navigate,
-    isEducator,
-    backendUrl,
-    setIsEducator,
-    userData,
-    setUserData,
-    fetchUserData,
-  } = useContext(AppContext);
+  const { backendUrl, userData, setUserData, setIsEducator } =
+    useContext(AppContext);
 
-  const location = useLocation();
-  const isCourseList = location.pathname.includes("/course-list");
+  const navigate = useNavigate();
+  const [showProfile, setShowProfile] = useState(false);
 
   /* ================= LOGOUT ================= */
   const handleLogout = async () => {
@@ -149,32 +21,45 @@ const Navbar = () => {
         {},
         { withCredentials: true }
       );
+
       setUserData(null);
       setIsEducator(false);
       toast.success("Logged out successfully");
       navigate("/login");
-    } catch (error) {
+    } catch {
       toast.error("Logout failed");
     }
   };
 
+  /* ================= BECOME EDUCATOR ================= */
   const becomeEducator = async () => {
-    // ✅ already educator → no API call
+    // already approved educator
     if (userData?.role === "educator") {
       navigate("/educator");
+      return;
+    }
+
+    // already applied
+    if (userData?.role === "pending") {
+      toast.info("Application submitted. Please wait for admin approval.");
       return;
     }
 
     try {
       const { data } = await axios.post(
         `${backendUrl}/api/educator/update-role`,
+        {},
         { withCredentials: true }
       );
 
       if (data.success) {
-        await fetchUserData(); // refresh role
         toast.success(data.message);
-        navigate("/educator");
+
+        // update local state (no extra API call)
+        setUserData((prev) => ({
+          ...prev,
+          role: "pending",
+        }));
       } else {
         toast.error(data.message);
       }
@@ -184,94 +69,135 @@ const Navbar = () => {
   };
 
   return (
-    <div
-      className="flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 
-                    py-4 bg-black border-b border-white/10 backdrop-blur-xl"
-    >
-      {/* Logo */}
-      <img
-        onClick={() => navigate("/")}
-        src={assets.academix_logo}
-        alt="logo"
-        className="w-28 lg:w-32 h-12 object-cover cursor-pointer"
-      />
+    <>
+      {/* ================= NAVBAR ================= */}
+      <div
+        className="
+          relative flex items-center justify-between
+          px-4 sm:px-10 md:px-14 lg:px-36 py-4
+          bg-black border-b border-white/10
+          backdrop-blur-xl
+        "
+      >
+        {/* Grid background */}
+        <div
+          className="
+            pointer-events-none absolute inset-0
+            bg-[radial-gradient(circle_at_1px_1px,#1e293b_1px,transparent_0)]
+            [background-size:32px_32px]
+            opacity-30
+          "
+        />
 
-      {/* ================= DESKTOP ================= */}
-      <div className="hidden md:flex items-center gap-6 text-gray-200">
-        {userData && (
-          <>
+        {/* Logo */}
+        <img
+          onClick={() => navigate("/")}
+          src={assets.academix_logo}
+          alt="logo"
+          className="relative z-10 w-28 lg:w-32 h-12 object-cover cursor-pointer"
+        />
+
+        {/* ================= DESKTOP ================= */}
+        <div className="relative z-10 hidden md:flex items-center gap-6 text-gray-200">
+          {userData ? (
+            <>
+              {/* Educator button */}
+              <button
+                onClick={becomeEducator}
+                disabled={userData.role === "pending"}
+                className={`transition ${
+                  userData.role === "pending"
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "hover:text-cyan-400"
+                }`}
+              >
+                {userData.role === "educator"
+                  ? "Educator Dashboard"
+                  : userData.role === "pending"
+                  ? "Request Pending"
+                  : "Become Educator"}
+              </button>
+
+              {/* Enrollments */}
+              <Link
+                to="/my-enrollments"
+                className="hover:text-cyan-400 transition"
+              >
+                My Enrollments
+              </Link>
+
+              {/* Name → Profile drawer */}
+              <p
+                onClick={() => setShowProfile(true)}
+                className="text-sm cursor-pointer hover:text-cyan-300 transition"
+              >
+                Hi!{" "}
+                <span className="font-semibold text-cyan-400">
+                  {userData.firstName} {userData.lastName}
+                </span>
+              </p>
+
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                className="bg-red-500/90 hover:bg-red-500
+                           px-4 py-2 rounded-full text-sm font-medium transition"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
             <button
-              onClick={becomeEducator}
-              className="hover:text-cyan-400 transition"
+              onClick={() => navigate("/login")}
+              className="bg-cyan-500 text-black px-5 py-2 rounded-full
+                         text-sm font-medium hover:bg-cyan-400 transition
+                         shadow-lg shadow-cyan-500/30"
             >
-              {userData.role === "educator"
-                ? "Educator Dashboard"
-                : "Become Educator"}
+              Login / Signup
             </button>
+          )}
+        </div>
 
-            <Link
-              to="/my-enrollments"
-              className="hover:text-cyan-400 transition"
-            >
-              My Enrollments
-            </Link>
+        {/* ================= MOBILE ================= */}
+        <div className="relative z-10 md:hidden flex items-center gap-3 text-gray-200">
+          {userData && (
+            <>
+              <Link
+                to="/my-enrollments"
+                className="hover:text-cyan-400 transition text-xs"
+              >
+                Enrollments
+              </Link>
 
-            {/* ✅ NAME AFTER ENROLLMENTS */}
-            <p className="text-sm">
-              Hi!{" "}
-              <span className="font-semibold text-cyan-400">
-                {userData.firstName} {userData.lastName}
-              </span>
-            </p>
+              <p
+                onClick={() => setShowProfile(true)}
+                className="text-xs text-cyan-400 cursor-pointer"
+              >
+                Hi {userData.firstName}
+              </p>
+            </>
+          )}
 
-            {/* LOGOUT */}
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded-full text-sm 
-                   hover:bg-red-400 transition"
-            >
-              Logout
+          {userData ? (
+            <button onClick={handleLogout}>
+              <img src={assets.user_icon} alt="logout" className="w-6 h-6" />
             </button>
-          </>
-        )}
-
-        {!userData && (
-          <button
-            onClick={() => navigate("/login")}
-            className="bg-cyan-500 text-black px-5 py-2 rounded-full text-sm font-medium 
-                 hover:bg-cyan-400 transition shadow-lg shadow-cyan-500/30"
-          >
-            Login / Signup
-          </button>
-        )}
+          ) : (
+            <button onClick={() => navigate("/login")}>
+              <img src={assets.user_icon} alt="login" className="w-6 h-6" />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* ================= MOBILE ================= */}
-      <div className="md:hidden flex items-center gap-3 text-gray-200">
-        {userData && (
-          <>
-            <Link
-              to="/my-enrollments"
-              className="hover:text-cyan-400 transition text-xs"
-            >
-              Enrollments
-            </Link>
-
-            <p className="text-xs text-cyan-400">Hi {userData.firstName}</p>
-          </>
-        )}
-
-        {userData ? (
-          <button onClick={handleLogout}>
-            <img src={assets.user_icon} alt="logout" className="w-6 h-6" />
-          </button>
-        ) : (
-          <button onClick={() => navigate("/login")}>
-            <img src={assets.user_icon} alt="login" className="w-6 h-6" />
-          </button>
-        )}
-      </div>
-    </div>
+      {/* ================= PROFILE DRAWER ================= */}
+      {showProfile && (
+        <ProfileDrawer
+          userData={userData}
+          onClose={() => setShowProfile(false)}
+        />
+      )}
+    </>
   );
 };
 

@@ -1,3 +1,34 @@
+//  import jwt from "jsonwebtoken";
+//  import User from "../models/user.js";
+
+// export const protectEducator = async (req, res, next) => {
+//   try {
+//     const { token } = req.cookies;
+
+//     if (!token) {
+//       return res.status(401).json({ message: "Not authenticated" });
+//     }
+
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     const user = await User.findById(decoded._id);
+
+//     if (!user) {
+//       return res.status(401).json({ message: "User not found" });
+//     }
+
+//     if (user.role !== "educator") {
+//       return res.status(403).json({ message: "Unauthorized access" });
+//     }
+
+//     req.user = user;
+//     req.educatorId = user._id;
+
+//     next();
+//   } catch (error) {
+//     res.status(401).json({ message: "Invalid or expired token" });
+//   }
+// };
+
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
@@ -6,18 +37,28 @@ export const protectEducator = async (req, res, next) => {
     const { token } = req.cookies;
 
     if (!token) {
-      return res.status(401).json({ message: "Not authenticated" });
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated",
+      });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
     const user = await User.findById(decoded._id);
 
     if (!user) {
-      return res.status(401).json({ message: "User not found" });
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
     if (user.role !== "educator") {
-      return res.status(403).json({ message: "Unauthorized access" });
+      return res.status(403).json({
+        success: false,
+        message: "Educator access only. Approval pending or not applied.",
+      });
     }
 
     req.user = user;
@@ -25,6 +66,9 @@ export const protectEducator = async (req, res, next) => {
 
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
   }
 };

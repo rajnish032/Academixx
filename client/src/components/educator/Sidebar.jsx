@@ -1,11 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import { assets } from "../../assets/assets";
-import { AppContext } from "../../context/AppContext";
 import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
-  const { isEducator } = useContext(AppContext);
-
   const menuItems = [
     { name: "Dashboard", path: "/educator", icon: assets.home_icon },
     { name: "Add Course", path: "/educator/add-course", icon: assets.add_icon },
@@ -16,8 +13,6 @@ const Sidebar = () => {
       icon: assets.person_tick_icon,
     },
   ];
-
-  if (!isEducator) return null;
 
   return (
     <div
@@ -45,11 +40,7 @@ const Sidebar = () => {
             ].join(" ")
           }
         >
-          <img
-            src={item.icon}
-            alt="icon"
-            className="w-5 h-5 opacity-90"
-          />
+          <img src={item.icon} alt="icon" className="w-5 h-5 opacity-90" />
           <p className="md:block hidden text-sm md:text-base">
             {item.name}
           </p>
@@ -60,3 +51,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
