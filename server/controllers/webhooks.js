@@ -144,29 +144,39 @@
 //   }
 // };
 
+import { createHmac } from "crypto";
+import Purchase from "../models/purchase.js";
+import Course from "../models/course.js";
+import User from "../models/user.js";
+
+
 
 export const razorpayWebhook = async (req, res) => {
   try {
     const signature = req.headers["x-razorpay-signature"];
 
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
-      .update(req.body) // ✅ IMPORTANT FIX
+    const expectedSignature = createHmac(
+      "sha256",
+      process.env.RAZORPAY_WEBHOOK_SECRET
+    )
+      .update(req.body) // ✅ RAW BODY
       .digest("hex");
 
     if (signature !== expectedSignature) {
-      console.log("❌ Invalid webhook signature");
+      console.log("❌ Invalid Razorpay signature");
       return res.status(400).json({ msg: "Invalid webhook signature" });
     }
 
-    console.log("✅ Webhook verified");
+    console.log("✅ Razorpay webhook verified");
 
-    const payment = JSON.parse(req.body).payload.payment.entity;
+    const payload = JSON.parse(req.body);
+    const payment = payload.payload.payment.entity;
+
     const { order_id, status } = payment;
 
     const purchase = await Purchase.findOne({ orderId: order_id });
     if (!purchase) {
-      console.log("❌ Purchase not found for order:", order_id);
+      console.log("❌ Purchase not found:", order_id);
       return res.json({ msg: "Purchase not found" });
     }
 
@@ -201,3 +211,4 @@ export const razorpayWebhook = async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 };
+
