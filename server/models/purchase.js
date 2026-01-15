@@ -1,26 +1,65 @@
+// import mongoose from "mongoose";
+
+// const PurchaseSchema = new mongoose.Schema({
+//     courseId: {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: 'Course',
+//         required: true
+//     },
+//     userId: {
+//         type: String,
+//         ref: 'User',
+//         required: true
+//     },
+//     amount: {
+//         type: Number,
+//         required: true
+//     },
+//     status:{
+//         type:String,
+//         enum:['pending', 'completed', 'failed'],default: 'pending'
+//     }
+// }, {timestamps:true})
+
+// const Purchase = mongoose.model('Purchase', PurchaseSchema);
+// export default Purchase;
+
+
 import mongoose from "mongoose";
 
-const PurchaseSchema = new mongoose.Schema({
+const PurchaseSchema = new mongoose.Schema(
+  {
     courseId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Course',
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
     },
-    userId: {
-        type: String,
-        ref: 'User',
-        required: true
-    },
-    amount: {
-        type: Number,
-        required: true
-    },
-    status:{
-        type:String,
-        enum:['pending', 'completed', 'failed'],default: 'pending'
-    }
-}, {timestamps:true})
 
-const Purchase = mongoose.model('Purchase', PurchaseSchema);
+    userId: {
+      type: mongoose.Schema.Types.ObjectId, // ✅ STRING ❌ → ObjectId ✅
+      ref: "User",
+      required: true,
+    },
+
+    orderId: {
+      type: String, // ✅ REQUIRED for Razorpay
+      index: true,
+    },
+
+    amount: {
+      type: Number,
+      required: true,
+    },
+
+    status: {
+      type: String,
+      enum: ["pending", "completed", "failed"],
+      default: "pending",
+    },
+  },
+  { timestamps: true }
+);
+
+const Purchase = mongoose.model("Purchase", PurchaseSchema);
 export default Purchase;
 
