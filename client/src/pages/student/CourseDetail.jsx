@@ -299,10 +299,11 @@ const CourseDetail = () => {
                     </div>
 
                     <div
-                      className={`overflow-hidden transition-all duration-300 ${
-                        openSections[index] ? "max-h-96" : "max-h-0"
-                      }`}
-                    >
+  className={`transition-all duration-300 ${
+    openSections[index] ? "max-h-96" : "max-h-0"
+  } overflow-y-auto hide-scrollbar`}
+>
+
                       <ul
                         className="md:pl-10 pl-4 pr-4 py-2 text-gray-200
                                  border-t border-white/10"
