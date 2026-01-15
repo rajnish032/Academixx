@@ -102,16 +102,46 @@ export const purchaseCourse = async (req, res) => {
     const { courseId } = req.body;
     const userId = req.user._id;
 
-    const user = await User.findById(userId);
-    const course = await Course.findById(courseId);
+    if (!courseId) {
+      return res.json({ success: false, message: "CourseId required" });
+    }
+
+    const [user, course] = await Promise.all([
+      User.findById(userId),
+      Course.findById(courseId),
+    ]);
 
     if (!user || !course) {
       return res.json({ success: false, message: "Data not found" });
     }
 
+    if (user.enrolledCourses.includes(courseId)) {
+      return res.json({
+        success: false,
+        message: "Already enrolled in this course",
+      });
+    }
+
     const amount =
       course.coursePrice -
       (course.discount * course.coursePrice) / 100;
+
+    if (amount <= 0) {
+      return res.json({ success: false, message: "Invalid course amount" });
+    }
+
+    const existingPurchase = await Purchase.findOne({
+      userId,
+      courseId,
+      status: "pending",
+    });
+
+    if (existingPurchase) {
+      return res.json({
+        success: false,
+        message: "Payment already in progress",
+      });
+    }
 
     const purchase = await Purchase.create({
       courseId,
@@ -126,15 +156,15 @@ export const purchaseCourse = async (req, res) => {
       receipt: `course_${purchase._id}`,
       notes: {
         purchaseId: purchase._id.toString(),
-        courseId: course._id.toString(),
-        userId: user._id.toString(),
+        courseId: courseId.toString(),
+        userId: userId.toString(),
       },
     });
 
     purchase.orderId = order.id;
     await purchase.save();
 
-    res.json({
+    return res.json({
       success: true,
       orderId: order.id,
       amount: order.amount,
@@ -147,7 +177,8 @@ export const purchaseCourse = async (req, res) => {
       },
     });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    console.error("purchaseCourse error:", error);
+    return res.json({ success: false, message: "Payment init failed" });
   }
 };
 

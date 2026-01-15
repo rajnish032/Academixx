@@ -1,155 +1,7 @@
-// import Stripe from "stripe";
-// import Purchase from "../models/purchase.js";
-// import Course from "../models/course.js";
-// import User from "../models/user.js";
-
-// const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// /* ================= STRIPE WEBHOOK ================= */
-// export const stripeWebhooks = async (req, res) => {
-//   const sig = req.headers["stripe-signature"];
-//   let event;
-
-//   try {
-//     event = stripe.webhooks.constructEvent(
-//       req.body,
-//       sig,
-//       process.env.STRIPE_WEBHOOK_SECRET
-//     );
-//   } catch (err) {
-//     return res.status(400).send(`Webhook Error: ${err.message}`);
-//   }
-
-//   try {
-//     switch (event.type) {
-//       /* ===== PAYMENT SUCCESS ===== */
-//       case "payment_intent.succeeded": {
-//         const paymentIntent = event.data.object;
-
-//         const sessionList = await stripe.checkout.sessions.list({
-//           payment_intent: paymentIntent.id,
-//         });
-
-//         const session = sessionList.data[0];
-//         const { purchaseId } = session.metadata;
-
-//         const purchase = await Purchase.findById(purchaseId);
-//         if (!purchase) break;
-
-//         const user = await User.findById(purchase.userId);
-//         const course = await Course.findById(purchase.courseId);
-
-//         if (!user || !course) break;
-
-//         /* prevent duplicate enroll */
-//         if (!course.enrolledStudents.includes(user._id)) {
-//           course.enrolledStudents.push(user._id);
-//           await course.save();
-//         }
-
-//         if (!user.enrolledCourses.includes(course._id)) {
-//           user.enrolledCourses.push(course._id);
-//           await user.save();
-//         }
-
-//         purchase.status = "completed";
-//         await purchase.save();
-
-//         break;
-//       }
-
-//       /* ===== PAYMENT FAILED ===== */
-//       case "payment_intent.payment_failed": {
-//         const paymentIntent = event.data.object;
-
-//         const sessionList = await stripe.checkout.sessions.list({
-//           payment_intent: paymentIntent.id,
-//         });
-
-//         const session = sessionList.data[0];
-//         const { purchaseId } = session.metadata;
-
-//         const purchase = await Purchase.findById(purchaseId);
-//         if (purchase) {
-//           purchase.status = "failed";
-//           await purchase.save();
-//         }
-//         break;
-//       }
-
-//       default:
-//         console.log(`Unhandled Stripe event: ${event.type}`);
-//     }
-
-//     res.json({ received: true });
-//   } catch (error) {
-//     res.status(500).json({
-//       received: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
-
-// import crypto from "crypto";
-// import Purchase from "../models/purchase.js";
-// import Course from "../models/course.js";
-// import User from "../models/user.js";
-
-// export const razorpayWebhook = async (req, res) => {
-//   try {
-//     const signature = req.headers["x-razorpay-signature"];
-
-//     const expectedSignature = crypto
-//       .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
-//       .update(JSON.stringify(req.body))
-//       .digest("hex");
-
-//     if (signature !== expectedSignature) {
-//       return res.status(400).json({ msg: "Invalid webhook signature" });
-//     }
-
-//     const payment = req.body.payload.payment.entity;
-//     const { order_id, status } = payment;
-
-//     const purchase = await Purchase.findOne({ orderId: order_id });
-//     if (!purchase) return res.json({ msg: "Purchase not found" });
-
-//     if (status === "captured") {
-//       purchase.status = "completed";
-//       await purchase.save();
-
-//       const user = await User.findById(purchase.userId);
-//       const course = await Course.findById(purchase.courseId);
-
-//       if (user && course) {
-//         if (!course.enrolledStudents.includes(user._id)) {
-//           course.enrolledStudents.push(user._id);
-//           await course.save();
-//         }
-
-//         if (!user.enrolledCourses.includes(course._id)) {
-//           user.enrolledCourses.push(course._id);
-//           await user.save();
-//         }
-//       }
-//     } else {
-//       purchase.status = "failed";
-//       await purchase.save();
-//     }
-
-//     res.status(200).json({ msg: "Webhook handled" });
-//   } catch (err) {
-//     res.status(500).json({ msg: err.message });
-//   }
-// };
-
 import { createHmac } from "crypto";
 import Purchase from "../models/purchase.js";
 import Course from "../models/course.js";
 import User from "../models/user.js";
-
-
 
 export const razorpayWebhook = async (req, res) => {
   try {
@@ -159,56 +11,53 @@ export const razorpayWebhook = async (req, res) => {
       "sha256",
       process.env.RAZORPAY_WEBHOOK_SECRET
     )
-      .update(req.body) // ✅ RAW BODY
+      .update(req.body)
       .digest("hex");
 
     if (signature !== expectedSignature) {
-      console.log("❌ Invalid Razorpay signature");
       return res.status(400).json({ msg: "Invalid webhook signature" });
     }
 
-    console.log("✅ Razorpay webhook verified");
-
     const payload = JSON.parse(req.body);
-    const payment = payload.payload.payment.entity;
+    const event = payload.event;
 
-    const { order_id, status } = payment;
+    if (event !== "payment.captured") {
+      return res.status(200).json({ msg: "Event ignored" });
+    }
+
+    const payment = payload.payload.payment.entity;
+    const { order_id } = payment;
 
     const purchase = await Purchase.findOne({ orderId: order_id });
+
     if (!purchase) {
-      console.log("❌ Purchase not found:", order_id);
-      return res.json({ msg: "Purchase not found" });
+      return res.status(200).json({ msg: "Purchase not found, ignored" });
+    }
+    if (purchase.status === "completed") {
+      return res.status(200).json({ msg: "Already processed" });
     }
 
-    if (status === "captured") {
-      purchase.status = "completed";
-      await purchase.save();
+    purchase.status = "completed";
+    await purchase.save();
+    const user = await User.findById(purchase.userId);
+    const course = await Course.findById(purchase.courseId);
 
-      const user = await User.findById(purchase.userId);
-      const course = await Course.findById(purchase.courseId);
-
-      if (user && course) {
-        if (!course.enrolledStudents.includes(user._id)) {
-          course.enrolledStudents.push(user._id);
-          await course.save();
-        }
-
-        if (!user.enrolledCourses.includes(course._id)) {
-          user.enrolledCourses.push(course._id);
-          await user.save();
-        }
+    if (user && course) {
+      if (!course.enrolledStudents.includes(user._id)) {
+        course.enrolledStudents.push(user._id);
+        await course.save();
       }
 
-      console.log("🎉 User enrolled successfully");
-    } else {
-      purchase.status = "failed";
-      await purchase.save();
+      if (!user.enrolledCourses.includes(course._id)) {
+        user.enrolledCourses.push(course._id);
+        await user.save();
+      }
     }
 
-    res.status(200).json({ msg: "Webhook handled" });
+    return res.status(200).json({ msg: "Payment processed successfully" });
   } catch (err) {
-    console.error("Webhook error:", err);
-    res.status(500).json({ msg: err.message });
+    console.error("Razorpay webhook error:", err);
+    return res.status(500).json({ msg: "Webhook error" });
   }
 };
 
