@@ -117,7 +117,7 @@ export const purchaseCourse = async (req, res) => {
       courseId,
       userId,
       amount,
-      status: "created",
+      status: "pending",
     });
 
     const order = await razorpayInstance.orders.create({
