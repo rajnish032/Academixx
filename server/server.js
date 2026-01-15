@@ -4,7 +4,8 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 
 import connectDB from "./config/db.js";
-import { stripeWebhooks } from "./controllers/webhooks.js";
+//import { stripeWebhooks } from "./controllers/webhooks.js";
+import { razorpayWebhook } from "./controllers/webhooks.js";
 
 import authRouter from "./routes/auth.js";
 import educatorRouter from "./routes/educatorRoutes.js";
@@ -23,7 +24,11 @@ app.use(
 );
 
 /* ================= STRIPE WEBHOOK ================= */
-app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
+app.post(
+  "/razorpay",
+  express.raw({ type: "application/json" }),
+  razorpayWebhook
+);
 app.use(express.json());
 app.use(cookieParser());
 

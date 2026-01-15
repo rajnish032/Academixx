@@ -53,32 +53,94 @@ const CourseDetail = () => {
     }
   };
 
+  // const enrollCourse = async () => {
+  //   try {
+  //     if (!userData) {
+  //       return toast.warn("Login to enroll in the course");
+  //     }
+  //     if (isAlreadyEnrolled) {
+  //       return toast.warn("Already enrolled");
+  //     }
+
+
+  //     const { data } = await axios.post(
+  //       backendUrl + "/api/user/purchase",
+  //       { courseId: courseData._id },
+  //       { withCredentials: true}
+  //     );
+
+  //     if (data.success) {
+  //       const { session_url } = data;
+  //       window.location.replace(session_url);
+  //     } else {
+  //       toast.error(data.message);
+  //     }
+  //   } catch (error) {
+  //     toast.error(error.message);
+  //   }
+  // };
+
   const enrollCourse = async () => {
-    try {
-      if (!userData) {
-        return toast.warn("Login to enroll in the course");
-      }
-      if (isAlreadyEnrolled) {
-        return toast.warn("Already enrolled");
-      }
-
-
-      const { data } = await axios.post(
-        backendUrl + "/api/user/purchase",
-        { courseId: courseData._id },
-        { withCredentials: true}
-      );
-
-      if (data.success) {
-        const { session_url } = data;
-        window.location.replace(session_url);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
+  try {
+    if (!userData) {
+      return toast.warn("Login to enroll in the course");
     }
-  };
+
+    if (isAlreadyEnrolled) {
+      return toast.warn("Already enrolled");
+    }
+
+    const { data } = await axios.post(
+      backendUrl + "/api/user/purchase",
+      { courseId: courseData._id },
+      { withCredentials: true }
+    );
+
+    if (!data.success) {
+      return toast.error(data.message);
+    }
+
+    const {
+      keyId,
+      orderId,
+      amount,
+      currency,
+      courseTitle,
+      user,
+    } = data;
+
+    const options = {
+      key: keyId,
+      amount,
+      currency,
+      name: "Your Platform Name",
+      description: courseTitle,
+      order_id: orderId,
+      handler: function () {
+        toast.success("Payment successful 🎉");
+        window.location.href = "/loading/my-enrollments";
+      },
+      prefill: {
+        name: user.name,
+        email: user.email,
+      },
+      theme: {
+        color: "#06b6d4",
+      },
+    };
+  
+    if (!window.Razorpay) {
+  toast.error("Razorpay SDK not loaded. Please refresh.");
+  return;
+}
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
 
   useEffect(() => {
     fetchCourseData();
