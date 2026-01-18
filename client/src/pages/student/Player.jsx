@@ -94,6 +94,16 @@ const getYouTubeId = (url) => {
   return match ? match[1] : null;
 };
 
+const isGoogleDriveLink = (url) => {
+  return url?.includes("drive.google.com");
+};
+
+const getGoogleDriveEmbed = (url) => {
+  if (!url) return null;
+  return url.replace("/view", "/preview");
+};
+
+
 
   const getCourseProgress = async () => {
     try {
@@ -255,10 +265,32 @@ const getYouTubeId = (url) => {
         <div className="mt-10">
           {playerData ? (
             <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)]">
-              <YouTube
+              {/* <YouTube
   videoId={getYouTubeId(playerData.lectureUrl)}
   iframeClassName="w-full aspect-video"
+/> */}
+
+
+{isGoogleDriveLink(playerData.lectureUrl) ? (
+  <iframe
+  id="drive-player"
+  src={getGoogleDriveEmbed(playerData.lectureUrl)}
+  className="w-full aspect-video"
+  allow="autoplay; fullscreen"
+  allowFullScreen
 />
+
+) : (
+  <YouTube
+    videoId={getYouTubeId(playerData.lectureUrl)}
+    iframeClassName="w-full aspect-video"
+    opts={{
+    playerVars: {
+      autoplay: 1,
+    },
+  }}
+  />
+)}
 
 
               <div className="flex justify-between items-center mt-2 px-3 py-2 text-sm md:text-base">

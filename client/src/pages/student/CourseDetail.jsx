@@ -11,16 +11,21 @@ import { toast } from "react-toastify";
 
 const getYouTubeId = (url) => {
   if (!url) return null;
-  try {
-    // Handles both https://www.youtube.com/watch?v=ID and https://youtu.be/ID
-    const parsedUrl = new URL(url);
-    if (parsedUrl.hostname.includes("youtu.be")) {
-      return parsedUrl.pathname.replace("/", "");
-    }
-    return parsedUrl.searchParams.get("v");
-  } catch {
-    return null;
-  }
+
+  const regex =
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+
+  const match = url.match(regex);
+  return match ? match[1] : null;
+};
+
+const isGoogleDriveLink = (url) => {
+  return url?.includes("drive.google.com");
+};
+
+const getGoogleDriveEmbed = (url) => {
+  if (!url) return null;
+  return url.replace("/view", "/preview");
 };
 
 const CourseDetail = () => {
@@ -96,7 +101,7 @@ const CourseDetail = () => {
       const { data } = await axios.post(
         backendUrl + "/api/user/purchase",
         { courseId: courseData._id },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (!data.success) {
@@ -299,11 +304,10 @@ const CourseDetail = () => {
                     </div>
 
                     <div
-  className={`transition-all duration-300 ${
-    openSections[index] ? "max-h-96" : "max-h-0"
-  } overflow-y-auto hide-scrollbar`}
->
-
+                      className={`transition-all duration-300 ${
+                        openSections[index] ? "max-h-96" : "max-h-0"
+                      } overflow-y-auto hide-scrollbar`}
+                    >
                       <ul
                         className="md:pl-10 pl-4 pr-4 py-2 text-gray-200
                                  border-t border-white/10"
@@ -322,9 +326,7 @@ const CourseDetail = () => {
                                   <p
                                     onClick={() =>
                                       setPlayerData({
-                                        videoId: getYouTubeId(
-                                          lecture.lectureUrl
-                                        ),
+                                        lectureUrl: lecture.lectureUrl,
                                       })
                                     }
                                     className="text-cyan-400 cursor-pointer hover:text-cyan-300"
@@ -335,7 +337,7 @@ const CourseDetail = () => {
                                 <p className="text-gray-300">
                                   {humanizeDuration(
                                     lecture.lectureDuration * 60 * 1000,
-                                    { units: ["h", "m"] }
+                                    { units: ["h", "m"] },
                                   )}
                                 </p>
                               </div>
@@ -367,11 +369,21 @@ const CourseDetail = () => {
           <div className="w-full md:w-1/2 z-10 flex justify-end">
             <div className="w-full max-w-md rounded-2xl overflow-hidden bg-white/5 border border-white/10 backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.9)]">
               {playerData ? (
-                <Youtube
-                  videoId={playerData.videoId}
-                  opts={{ playerVars: { autoplay: 1 } }}
-                  iframeClassName="w-full aspect-video"
-                />
+                isGoogleDriveLink(playerData.lectureUrl) ? (
+                  <iframe
+                    id="drive-player"
+                    src={getGoogleDriveEmbed(playerData.lectureUrl)}
+                    className="w-full aspect-video"
+                    allow="autoplay; fullscreen"
+                    allowFullScreen
+                  />
+                ) : (
+                  <Youtube
+                    videoId={getYouTubeId(playerData.lectureUrl)}
+                    opts={{ playerVars: { autoplay: 1, fs: 1 } }}
+                    iframeClassName="w-full aspect-video"
+                  />
+                )
               ) : (
                 <img
                   src={courseData.courseThumbnail}
@@ -465,8 +477,8 @@ const CourseDetail = () => {
                   {isAlreadyEnrolled
                     ? "Already Enrolled"
                     : isPaying
-                    ? "Processing..."
-                    : "Enroll now"}
+                      ? "Processing..."
+                      : "Enroll now"}
                 </button>
 
                 <div className="pt-6">
