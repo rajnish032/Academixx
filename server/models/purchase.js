@@ -36,13 +36,13 @@ const PurchaseSchema = new mongoose.Schema(
     },
 
     userId: {
-      type: mongoose.Schema.Types.ObjectId, // ✅ STRING ❌ → ObjectId ✅
+      type: mongoose.Schema.Types.ObjectId, 
       ref: "User",
       required: true,
     },
 
     orderId: {
-      type: String, // ✅ REQUIRED for Razorpay
+      type: String, 
       index: true,
     },
 
