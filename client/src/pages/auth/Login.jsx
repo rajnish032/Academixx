@@ -39,7 +39,7 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-black text-white overflow-hidden">
+    <div className="relative min-h-[calc(100vh-72px)] flex items-center justify-center bg-black text-white overflow-hidden">
       {/* 🔳 Grid background */}
       <div
         className="
