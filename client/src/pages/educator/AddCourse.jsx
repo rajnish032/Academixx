@@ -258,7 +258,7 @@ const AddCourse = () => {
         </div>
 
         {/* Chapters & Lectures */}
-        <div className="pt-2">
+        <div className="pt-2 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
           {chapters.map((chapter, chapterIndex) => (
             <div
               key={chapter.chapterId}
