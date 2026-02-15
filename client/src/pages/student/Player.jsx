@@ -166,122 +166,24 @@ const Player = () => {
   }, []);
 
   return courseData ? (
-    <>
-      <div className="relative px-0  pb-16 min-h-screen bg-black text-white">
-        {/* 🔹 Glow Gradient */}
-        <div
-          className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[260px]
-                      bg-cyan-500/20 blur-3xl rounded-full -z-10"
-        />
-
-        <div className="flex flex-col-reverse md:grid md:grid-cols-[1fr_3fr] gap-10 relative z-10">
-          {/* LEFT */}
-          <div className="text-gray-100 max-h-[80vh] overflow-y-auto hide-scrollbar">
-            <h2 className="text-xl font-semibold px-4">Course Structure</h2>
-
-            <div className="pt-5">
-              {courseData.courseContent?.map((chapter, index) => (
-                <div
-                  key={index}
-                  className="border border-white/10 bg-white/5 backdrop-blur-md mb-2 rounded-lg overflow-hidden"
-                >
-                  <div
-                    className="flex items-center justify-between px-4 py-3 cursor-pointer select-none"
-                    onClick={() => toggleSection(index)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <img
-                        className={`transform transition-transform ${
-                          openSections[index] ? "rotate-180" : ""
-                        }`}
-                        src={assets.down_arrow_icon}
-                        alt="arrow_icon"
-                      />
-                      <p className="font-medium md:text-base text-sm text-white">
-                        {chapter.chapterTitle}
-                      </p>
-                    </div>
-
-                    <p className="text-sm text-gray-300">
-                      {chapter.chapterContent.length} lectures -{" "}
-                      {calculateChapterTime(chapter)}
-                    </p>
-                  </div>
-
-                  <div
-                    className={`transition-all duration-300 ${
-                      openSections[index] ? "max-h-96" : "max-h-0"
-                    } overflow-y-auto hide-scrollbar`}
-                  >
-                    <ul className="md:pl-10 pl-4 pr-4 py-2 text-gray-200 border-t border-white/10">
-                      {chapter.chapterContent.map((lecture, i) => (
-                        <li key={i} className="flex items-start gap-2 py-1">
-                          <img
-                            src={
-                              progressData &&
-                              progressData?.lectureCompleted?.includes(
-                                lecture.lectureId,
-                              )
-                                ? assets.blue_tick_icon
-                                : assets.play_icon
-                            }
-                            className="w-4 h-2.5 mt-1"
-                            alt=""
-                          />
-
-                          <div className="flex items-center justify-between w-full text-gray-100">
-                            <p className="max-w-[70%] md:max-w-[75%]">
-                              {lecture.lectureTitle}
-                            </p>
-
-                            <div className="flex gap-3 items-center text-sm">
-                              {lecture.lectureUrl && (
-                                <p
-                                  onClick={() =>
-                                    setPlayerData({
-                                      ...lecture,
-                                      lectureId: lecture.lectureId,
-                                      chapter: index + 1,
-                                      lecture: i + 1,
-                                    })
-                                  }
-                                  className="text-cyan-400 cursor-pointer hover:text-cyan-300"
-                                >
-                                  Watch
-                                </p>
-                              )}
-
-                              <p className="text-gray-300">
-                                {humanizeDuration(
-                                  lecture.lectureDuration * 60 * 1000,
-                                  { units: ["h", "m"] },
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2 py-3 mt-10">
-              <h1 className="text-xl font-bold">Rate this course</h1>
-              <Rating initialRating={initialRating} onRate={handleRate} />
-            </div>
-          </div>
-
-          {/* RIGHT */}
-          <div className="mt-6 md:mt-10 h-[80vh] flex px-2">
-            {playerData ? (
-              <div className="h-full pt-3 w-full flex flex-col bg-white/5 border border-white/10 rounded-xl overflow-hidden backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)]">
+  <>
+    <div className="relative pb-16 min-h-screen bg-black text-white">
+      {/* 🔹 Glow Gradient */}
+      <div
+        className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-[600px] h-[260px]
+                    bg-cyan-500/10 blur-[120px] rounded-full -z-10"
+      />
+      <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 flex flex-col md:grid md:grid-cols-[3fr_1.2fr] gap-8 relative z-10">
+        
+        <div className="flex flex-col gap-6">
+          {playerData ? (
+            <div className="w-full bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md shadow-2xl">
+              <div className="relative w-full aspect-video bg-black">
                 {isGoogleDriveLink(playerData.lectureUrl) ? (
                   <iframe
                     id="drive-player"
                     src={getGoogleDriveEmbed(playerData.lectureUrl)}
-                    className="w-full flex-1"
+                    className="absolute top-0 left-0 w-full h-full"
                     allow="autoplay; fullscreen"
                     allowFullScreen
                     frameBorder="0"
@@ -289,64 +191,158 @@ const Player = () => {
                 ) : (
                   <YouTube
                     videoId={getYouTubeId(playerData.lectureUrl)}
-                    className="flex-1"
+                    className="absolute top-0 left-0 w-full h-full"
                     iframeClassName="w-full h-full"
                     opts={{
                       playerVars: {
                         autoplay: 1,
-
-                        controls: 1, // show controls (progress bar, play/pause)
-                        fs: 1, // fullscreen button ON
-
-                        modestbranding: 1, // minimal YouTube logo
-                        rel: 0, // no related videos after end
-                        showinfo: 0, //  hide title
-                        iv_load_policy: 3, // hide annotations
-                        disablekb: 0, // keyboard shortcuts allowed
+                        controls: 1,
+                        modestbranding: 1,
+                        rel: 0,
+                        showinfo: 0,
+                        iv_load_policy: 3,
                         playsinline: 1,
                       },
                     }}
                     onEnd={() => {
-    markLectureAsCompleted(playerData.lectureId);
-    playNextLecture();
-  }}
+                      markLectureAsCompleted(playerData.lectureId);
+                      playNextLecture();
+                    }}
                   />
                 )}
-
-                <div className="flex justify-between items-center px-4 py-3 border-t border-white/10">
-                  <p className="text-gray-100 truncate">
-                    {playerData.chapter}. {playerData.lecture}{" "}
-                    {playerData.lectureTitle}
-                  </p>
-
-                  <button
-                    onClick={() => markLectureAsCompleted(playerData.lectureId)}
-                    className="text-cyan-400 hover:text-cyan-300 font-medium whitespace-nowrap"
-                  >
-                    {progressData?.lectureCompleted?.includes(
-                      playerData.lectureId,
-                    )
-                      ? "Completed"
-                      : "Mark as Completed"}
-                  </button>
-                </div>
               </div>
-            ) : (
+              <div className="flex justify-between items-center px-4 py-4 border-t border-white/10 bg-white/[0.02]">
+                <div className="flex-1 mr-4">
+                  <p className="text-cyan-400 text-xs font-mono uppercase tracking-wider mb-1">
+                    Chapter {playerData.chapter} • Lecture {playerData.lecture}
+                  </p>
+                  <h1 className="text-lg font-semibold text-gray-100 truncate">
+                    {playerData.lectureTitle}
+                  </h1>
+                </div>
+
+                <button
+                  onClick={() => markLectureAsCompleted(playerData.lectureId)}
+                  className={`px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                    progressData?.lectureCompleted?.includes(playerData.lectureId)
+                      ? "bg-green-500/20 text-green-400 border border-green-500/40"
+                      : "bg-cyan-500 text-black hover:bg-cyan-400 active:scale-95"
+                  }`}
+                >
+                  {progressData?.lectureCompleted?.includes(playerData.lectureId)
+                    ? "✓ Completed"
+                    : "Mark Done"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full aspect-video rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
               <img
                 src={courseData.courseThumbnail}
-                alt=""
-                className="w-full rounded-xl border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.8)]"
+                alt="Course Thumbnail"
+                className="w-full h-full object-cover"
               />
-            )}
+            </div>
+          )}
+          <div className="hidden md:flex items-center gap-4 p-6 bg-white/5 border border-white/10 rounded-2xl">
+            <h2 className="text-lg font-bold">How's the learning?</h2>
+            <Rating initialRating={initialRating} onRate={handleRate} />
+          </div>
+        </div>
+        <div className="flex flex-col h-full">
+          <h2 className="text-xl font-bold mb-5 flex items-center gap-2">
+            Course Structure
+            <span className="text-xs bg-white/10 px-2 py-1 rounded text-gray-400 font-normal">
+              {courseData.courseContent?.length} Chapters
+            </span>
+          </h2>
+
+          <div className="md:max-h-[75vh] md:overflow-y-auto space-y-3 pr-1 hide-scrollbar">
+            {courseData.courseContent?.map((chapter, index) => (
+              <div
+                key={index}
+                className="border border-white/10 bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden"
+              >
+                <div
+                  className="flex items-center justify-between px-4 py-4 cursor-pointer hover:bg-white/5 transition-colors"
+                  onClick={() => toggleSection(index)}
+                >
+                  <div className="flex items-center gap-3">
+                    <img
+                      className={`w-3 h-3 transition-transform duration-300 ${
+                        openSections[index] ? "rotate-180" : ""
+                      }`}
+                      src={assets.down_arrow_icon}
+                      alt="arrow"
+                    />
+                    <p className="font-semibold text-sm md:text-base leading-tight">
+                      {chapter.chapterTitle}
+                    </p>
+                  </div>
+                  <p className="text-[10px] md:text-xs text-gray-400 whitespace-nowrap ml-2">
+                    {calculateChapterTime(chapter)}
+                  </p>
+                </div>
+
+                <div
+                  className={`transition-all duration-300 ease-in-out ${
+                    openSections[index] ? "max-h-[1000px] border-t border-white/10" : "max-h-0"
+                  } overflow-hidden`}
+                >
+                  <ul className="py-2">
+                    {chapter.chapterContent.map((lecture, i) => (
+                      <li 
+                        key={i} 
+                        className={`group flex items-start gap-3 px-4 py-3 hover:bg-cyan-500/10 cursor-pointer transition-colors ${
+                          playerData?.lectureId === lecture.lectureId ? "bg-cyan-500/10" : ""
+                        }`}
+                        onClick={() =>
+                          setPlayerData({
+                            ...lecture,
+                            lectureId: lecture.lectureId,
+                            chapter: index + 1,
+                            lecture: i + 1,
+                          })
+                        }
+                      >
+                        <img
+                          src={
+                            progressData?.lectureCompleted?.includes(lecture.lectureId)
+                              ? assets.blue_tick_icon
+                              : assets.play_icon
+                          }
+                          className="w-4 h-4 mt-0.5 object-contain"
+                          alt=""
+                        />
+
+                        <div className="flex flex-col w-full">
+                          <p className={`text-sm ${playerData?.lectureId === lecture.lectureId ? "text-cyan-400 font-medium" : "text-gray-200"}`}>
+                            {lecture.lectureTitle}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">
+                             {humanizeDuration(lecture.lectureDuration * 60 * 1000, { units: ["h", "m"] })}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex md:hidden flex-col items-center gap-4 py-10 border-t border-white/10 mt-6">
+            <h2 className="text-lg font-bold">Rate this course</h2>
+            <Rating initialRating={initialRating} onRate={handleRate} />
           </div>
         </div>
       </div>
+    </div>
 
-      <Footer />
-    </>
-  ) : (
-    <Loading />
-  );
+    <Footer />
+  </>
+) : (
+  <Loading />
+);
 };
 
 export default Player;
