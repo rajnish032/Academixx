@@ -14,39 +14,53 @@ const Loading = () => {
     }
   }, []);
 
-  return (
-    <div className="relative min-h-screen flex items-center justify-center bg-slate-950 text-white overflow-hidden">
+  const serifDisplay = { fontFamily: "'Fraunces', 'Playfair Display', Georgia, serif" };
+  const metaSans = { fontFamily: "'Inter', sans-serif", letterSpacing: "0.15em" };
 
-      {/* ✅ Animated Grid Background */}
+  return (
+    <div
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{ background: "#F8F5EE", color: "#211F1B" }}
+    >
+      {/* Faint rule grid, consistent with rest of site */}
       <div
-        className="
-          pointer-events-none absolute inset-0 
-          bg-[radial-gradient(circle_at_1px_1px,#1e293b_1px,transparent_0)]
-          [background-size:32px_32px]
-          opacity-40
-          animate-pulse
-        "
+        className="pointer-events-none absolute inset-0 opacity-[0.3]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#A9823D18 1px, transparent 1px), linear-gradient(90deg, #A9823D18 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
       />
 
-      {/* ✅ Glow Blobs */}
-      <div className="pointer-events-none absolute -top-32 -left-32 h-72 w-72 rounded-full bg-indigo-500 opacity-30 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-72 w-72 rounded-full bg-cyan-500 opacity-30 blur-3xl" />
+      <div className="relative z-10 flex flex-col items-center gap-5">
+        <p className="text-2xl" style={{ ...serifDisplay, fontWeight: 600, color: "#1D2B3A" }}>
+          AcademiX
+        </p>
 
-      {/* ✅ Spinner */}
-      <div className="relative z-10 flex flex-col items-center gap-4">
-        <div
-          className="
-            w-16 sm:w-20 aspect-square 
-            border-4 border-slate-700 
-            border-t-4 border-t-cyan-400 
-            rounded-full animate-spin
-            shadow-lg shadow-cyan-500/30
-          "
-        />
-        <p className="text-sm text-slate-300 tracking-wide">
-          Loading, please wait...
+        {/* Animated ink underline */}
+        <div className="w-40 h-[2px] overflow-hidden" style={{ background: "#A9823D30" }}>
+          <div
+            className="h-full"
+            style={{
+              width: "40%",
+              background: "#7A2E2E",
+              animation: "loadingBar 1.2s ease-in-out infinite",
+            }}
+          />
+        </div>
+
+        <p className="text-[11px] uppercase" style={{ ...metaSans, color: "#6B6355" }}>
+          Preparing your page
         </p>
       </div>
+
+      <style>{`
+        @keyframes loadingBar {
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(150%); }
+          100% { transform: translateX(-100%); }
+        }
+      `}</style>
     </div>
   );
 };

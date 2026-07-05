@@ -1,51 +1,3 @@
-// import React from 'react'
-// import { assets } from '../../assets/assets';
-// import { UserButton, useUser } from '@clerk/clerk-react'
-// import { Link } from 'react-router-dom';
-
-// const Navbar = () => {
-//   const { user } = useUser();
-
-//   return (
-//     <div className="
-//       flex items-center justify-between 
-//       px-4 md:px-10 py-3
-//       bg-slate-900/70 border-b border-slate-800/60
-//       backdrop-blur-xl
-//       text-slate-100
-//     ">
-//       <Link to="/">
-//         <img
-//           src={assets.academix_logo}
-//           alt="logo"
-//           className="w-28 lg:w-32 h-12 object-contain cursor-pointer"
-//         />
-//       </Link>
-
-//       <div className="flex items-center gap-4 text-slate-200">
-//         <p className="text-sm md:text-base">
-//           Hi!{" "}
-//           <span className="font-semibold text-cyan-400">
-//             {user ? user.fullName : "Developer"}
-//           </span>
-//         </p>
-
-//         {user ? (
-//           <UserButton />
-//         ) : (
-//           <img
-//             className="w-9 h-9 rounded-full border border-slate-600 object-cover"
-//             src={assets.profile_img}
-//             alt="profile"
-//           />
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Navbar;
-
 import React, { useContext } from "react";
 import { assets } from "../../assets/assets";
 import { Link } from "react-router-dom";
@@ -57,15 +9,9 @@ const Navbar = () => {
   const { userData, backendUrl, setUserData, setIsEducator, navigate } =
     useContext(AppContext);
 
-  /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     try {
-      await axios.post(
-        `${backendUrl}/api/auth/logout`,
-        {},
-        { withCredentials: true }
-      );
-
+      await axios.post(`${backendUrl}/api/auth/logout`, {}, { withCredentials: true });
       setUserData(null);
       setIsEducator(false);
       toast.success("Logged out successfully");
@@ -76,47 +22,35 @@ const Navbar = () => {
   };
 
   return (
-    <div
-      className="
-        flex items-center justify-between 
-        px-4 md:px-10 py-3
-        bg-slate-900/70 border-b border-slate-800/60
-        backdrop-blur-xl
-        text-slate-100
-      "
-    >
-      {/* Logo */}
+    <div className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 md:px-10 py-3 bg-paper border-b border-navy text-ink">
       <Link to="/">
         <img
           src={assets.academix_logo}
           alt="logo"
-          className="w-28 lg:w-32 h-12 object-contain cursor-pointer"
+          className="w-28 lg:w-32 h-12 object-contain cursor-pointer brightness-0 invert-[0.15] sepia hue-rotate-180"
         />
       </Link>
 
-      {/* Right section */}
-      <div className="flex items-center gap-4 text-slate-200">
-        <p className="text-sm md:text-base">
-          Hi!{" "}
-          <span className="font-semibold text-cyan-400">
-            {userData
-              ? `${userData.firstName} ${userData.lastName}`
-              : "Educator"}
-          </span>
-        </p>
+      <div className="flex items-center gap-4">
+        <div className="text-right hidden sm:block">
+          <p className="font-meta text-[9px] uppercase text-oxblood leading-none mb-1">
+            Faculty
+          </p>
+          <p className="font-body text-sm text-navy">
+            {userData ? `${userData.firstName} ${userData.lastName}` : "Educator"}
+          </p>
+        </div>
 
         {userData ? (
           <button
             onClick={handleLogout}
-            className="bg-red-500/90 hover:bg-red-500 
-                       px-4 py-2 rounded-full text-sm font-medium
-                       transition"
+            className="font-meta px-4 py-1.5 text-[11px] uppercase border border-oxblood text-oxblood hover:bg-oxblood hover:text-paper transition-colors"
           >
             Logout
           </button>
         ) : (
           <img
-            className="w-9 h-9 rounded-full border border-slate-600 object-cover"
+            className="w-9 h-9 object-cover border border-brass/60"
             src={assets.profile_img}
             alt="profile"
           />

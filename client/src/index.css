@@ -1,15 +1,29 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Source+Serif+4:wght@400;600&family=Inter:wght@500;600&display=swap');
 
 @import "tailwindcss";
 
+@theme {
+  --color-paper: #F8F5EE;
+  --color-paper-alt: #FFFDF8;
+  --color-ink: #211F1B;
+  --color-navy: #1D2B3A;
+  --color-oxblood: #7A2E2E;
+  --color-brass: #A9823D;
+  --color-muted: #6B6355;
+  --color-faint: #A39A88;
 
-*{
-  font-family: outfit;
+  --font-display: "Fraunces", "Playfair Display", Georgia, serif;
+  --font-body: "Source Serif 4", Georgia, serif;
+  --font-meta: "Inter", sans-serif;
+  --font-outfit: "Outfit", sans-serif;
+}
+
+* {
+  font-family: theme(--font-outfit);
 }
 
 .animated-grid {
-  background-image: 
+  background-image:
     linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -17,31 +31,31 @@
 }
 
 @keyframes gridMove {
-  0% {
-    background-position: 0 0, 0 0;
-  }
-  100% {
-    background-position: 200px 200px, 200px 200px;
-  }
-}
-/* 🔹 Glow Pulse Animation */
-@keyframes glowPulse {
-  0%, 100% {
-    opacity: 0.25;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.45;
-    transform: scale(1.08);
-  }
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 200px 200px, 200px 200px; }
 }
 
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(1.08); }
+}
+
+@keyframes loadingBar {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(150%); }
+  100% { transform: translateX(-100%); }
+}
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE & Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+input::placeholder {
+  color: #A39A88;
+  font-family: 'Source Serif 4', Georgia, serif;
 }

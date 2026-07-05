@@ -15,6 +15,9 @@ const Navbar = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
 
+  const serifDisplay = { fontFamily: "'Fraunces', 'Playfair Display', Georgia, serif" };
+  const metaSans = { fontFamily: "'Inter', sans-serif", letterSpacing: "0.06em" };
+
   /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     try {
@@ -63,43 +66,66 @@ const Navbar = () => {
 
   return (
     <>
-      {/* ================= NAVBAR ================= */}
-      <div className="relative z-40 flex items-center justify-between px-4 py-4 bg-black border-b border-white/10 backdrop-blur-xl md:px-14 lg:px-36">
-        {/* background grid */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,#1e293b_1px,transparent_0)] [background-size:32px_32px] opacity-30" />
-
+      {/* ================= NAVBAR (fixed) ================= */}
+      <div
+        className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 py-4 md:px-14 lg:px-36"
+        style={{ background: "#F8F5EE", borderBottom: "1px solid #1D2B3A" }}
+      >
         {/* Logo */}
         <img
           src={assets.academix_logo}
           alt="logo"
           onClick={() => navigate("/")}
           className="relative z-50 w-28 h-12 cursor-pointer object-cover"
+          style={{ filter: "invert(15%) sepia(20%) hue-rotate(180deg)" }}
         />
 
         {/* ================= DESKTOP ================= */}
-        <div className="relative z-50 hidden md:flex items-center gap-6 text-gray-200">
+        <div className="relative z-50 hidden md:flex items-center gap-7">
           {userData ? (
             <>
-              <button onClick={becomeEducator} className="hover:text-cyan-400">
+              <button
+                onClick={becomeEducator}
+                className="text-sm transition-colors"
+                style={{ ...metaSans, color: "#1D2B3A" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#7A2E2E")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#1D2B3A")}
+              >
                 {userData.role === "educator"
                   ? "Educator Dashboard"
                   : "Become Educator"}
               </button>
 
-              <Link to="/my-enrollments" className="hover:text-cyan-400">
+              <Link
+                to="/my-enrollments"
+                className="text-sm transition-colors"
+                style={{ ...metaSans, color: "#1D2B3A" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#7A2E2E")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#1D2B3A")}
+              >
                 My Enrollments
               </Link>
 
               <span
                 onClick={() => setShowProfile(true)}
-                className="cursor-pointer text-cyan-400"
+                className="cursor-pointer text-sm"
+                style={{ ...serifDisplay, fontWeight: 600, color: "#7A2E2E" }}
               >
-                Hi {userData.firstName}
+                Hi, {userData.firstName}
               </span>
 
               <button
                 onClick={handleLogout}
-                className="bg-red-500 px-4 py-2 rounded-full text-sm"
+                className="px-4 py-1.5 text-[11px] uppercase transition-colors"
+                style={{ ...metaSans, color: "#7A2E2E", border: "1px solid #7A2E2E" }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#7A2E2E";
+                  e.currentTarget.style.color = "#F8F5EE";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "#7A2E2E";
+                }}
               >
                 Logout
               </button>
@@ -107,7 +133,8 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="bg-cyan-500 px-5 py-2 rounded-full text-black"
+              className="px-5 py-2 text-[11px] uppercase"
+              style={{ ...metaSans, background: "#7A2E2E", color: "#F8F5EE" }}
             >
               Login / Signup
             </button>
@@ -120,59 +147,70 @@ const Navbar = () => {
           onClick={() => setMobileMenu(true)}
           className="relative z-50 md:hidden"
         >
-          <div className="space-y-1">
-            <span className="block w-6 h-0.5 bg-white" />
-            <span className="block w-6 h-0.5 bg-white" />
-            <span className="block w-6 h-0.5 bg-white" />
+          <div className="space-y-1.5">
+            <span className="block w-6 h-[1.5px]" style={{ background: "#1D2B3A" }} />
+            <span className="block w-6 h-[1.5px]" style={{ background: "#1D2B3A" }} />
+            <span className="block w-6 h-[1.5px]" style={{ background: "#1D2B3A" }} />
           </div>
         </button>
       </div>
 
-      {/* ================= MOBILE MENU (FIXED) ================= */}
+      {/* Spacer so content doesn't sit under the fixed navbar */}
+      <div className="h-[72px] md:h-[80px]" />
+
+      {/* ================= MOBILE MENU ================= */}
       {mobileMenu && (
         <>
-          {/* overlay */}
           <div
-            className="fixed inset-0 bg-black/60 z-40"
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(29,43,58,0.5)" }}
             onClick={() => setMobileMenu(false)}
           />
 
-          {/* menu */}
-          <div className="fixed top-16 right-4 w-64 bg-black border border-white/10 rounded-xl z-50 text-gray-200 shadow-xl">
+          <div
+            className="fixed top-16 right-4 w-64 z-50"
+            style={{ background: "#FFFDF8", border: "1px solid #1D2B3A" }}
+          >
             {userData ? (
               <>
-                <div className="px-4 py-3 border-b border-white/10 text-cyan-400">
-                  Hi {userData.firstName}
+                <div
+                  className="px-4 py-3 text-sm"
+                  style={{ ...serifDisplay, fontWeight: 600, color: "#7A2E2E", borderBottom: "1px solid #A9823D30" }}
+                >
+                  Hi, {userData.firstName}
                 </div>
 
                 <button
-  onClick={() => {
-    if (userData.role === "educator") {
-      navigate("/educator");
-    } else {
-      becomeEducator();
-    }
-    setMobileMenu(false);
-  }}
-  disabled={userData.role === "pending"}
-  className={`w-full px-4 py-2 text-left transition ${
-    userData.role === "pending"
-      ? "text-gray-400 cursor-not-allowed"
-      : "hover:bg-white/5"
-  }`}
->
-  {userData.role === "educator"
-    ? "Educator Dashboard"
-    : userData.role === "pending"
-    ? "Request Pending"
-    : "Become Educator"}
-</button>
-
+                  onClick={() => {
+                    if (userData.role === "educator") {
+                      navigate("/educator");
+                    } else {
+                      becomeEducator();
+                    }
+                    setMobileMenu(false);
+                  }}
+                  disabled={userData.role === "pending"}
+                  className="w-full px-4 py-3 text-left text-sm transition-colors"
+                  style={{
+                    ...metaSans,
+                    fontSize: "13px",
+                    color: userData.role === "pending" ? "#A39A88" : "#1D2B3A",
+                    cursor: userData.role === "pending" ? "not-allowed" : "pointer",
+                    borderBottom: "1px solid #A9823D30",
+                  }}
+                >
+                  {userData.role === "educator"
+                    ? "Educator Dashboard"
+                    : userData.role === "pending"
+                    ? "Request Pending"
+                    : "Become Educator"}
+                </button>
 
                 <Link
                   to="/my-enrollments"
                   onClick={() => setMobileMenu(false)}
-                  className="block px-4 py-2 hover:bg-white/5"
+                  className="block px-4 py-3 text-sm"
+                  style={{ ...metaSans, fontSize: "13px", color: "#1D2B3A", borderBottom: "1px solid #A9823D30" }}
                 >
                   My Enrollments
                 </Link>
@@ -182,7 +220,8 @@ const Navbar = () => {
                     handleLogout();
                     setMobileMenu(false);
                   }}
-                  className="w-full px-4 py-2 text-left text-red-400 hover:bg-white/5"
+                  className="w-full px-4 py-3 text-left text-sm"
+                  style={{ ...metaSans, fontSize: "13px", color: "#7A2E2E" }}
                 >
                   Logout
                 </button>
@@ -193,7 +232,8 @@ const Navbar = () => {
                   navigate("/login");
                   setMobileMenu(false);
                 }}
-                className="w-full px-4 py-3 hover:bg-white/5"
+                className="w-full px-4 py-3 text-sm"
+                style={{ ...metaSans, fontSize: "13px", color: "#1D2B3A" }}
               >
                 Login / Signup
               </button>

@@ -31,112 +31,99 @@ const MyCourses = () => {
   }, []);
 
   return courses ? (
-    <div className="relative h-full overflow-y-auto flex flex-col items-start gap-8 p-4 md:p-8 w-full text-slate-100">
-      {/* glow */}
-      <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 h-40 w-72 rounded-full bg-cyan-500/25 blur-3xl" />
+  <div className="relative h-full overflow-y-auto flex flex-col items-start gap-8 p-4 md:p-8 w-full bg-paper text-ink">
+    <div className="w-full relative z-10">
+      <p className="font-meta text-[10px] uppercase mb-2 text-oxblood">
+        Faculty Records
+      </p>
+      <h2 className="font-display font-semibold text-xl text-navy pb-5">
+        My Courses
+      </h2>
 
-      <div className="w-full relative z-10">
-        <h2 className="pb-4 text-lg font-semibold text-slate-100">My Courses</h2>
+      <div className="w-full border border-navy bg-paper-alt">
+        <table className="md:table-auto table-fixed w-full">
+          <thead className="border-b border-navy">
+            <tr>
+              <th className="font-meta text-[10px] uppercase text-muted px-4 py-3 text-left truncate">
+                Course
+              </th>
+              <th className="font-meta text-[10px] uppercase text-muted px-4 py-3 text-left truncate">
+                Earnings
+              </th>
+              <th className="font-meta text-[10px] uppercase text-muted px-4 py-3 text-left truncate">
+                Students
+              </th>
+              <th className="font-meta text-[10px] uppercase text-muted px-4 py-3 text-left truncate">
+                Published On
+              </th>
+              <th className="font-meta text-[10px] uppercase text-muted px-4 py-3 text-left truncate">
+                Action
+              </th>
+            </tr>
+          </thead>
 
-        <div
-          className="
-            flex flex-col items-center max-w-5xl w-full overflow-hidden rounded-xl
-            border bg-slate-900/85 border-slate-800
-            shadow-xl shadow-black/50
-          "
-        >
-          <table className="md:table-auto table-fixed w-full overflow-hidden">
-            <thead
-              className="
-                text-slate-100 text-sm text-left
-                border-b border-slate-800
-                bg-slate-950/70
-              "
-            >
-              <tr>
-                <th className="px-4 py-3 font-semibold truncate">All Courses</th>
-                <th className="px-4 py-3 font-semibold truncate">Earnings</th>
-                <th className="px-4 py-3 font-semibold truncate">Students</th>
-                <th className="px-4 py-3 font-semibold truncate">Published On</th>
-                <th className="px-4 py-3 font-semibold truncate">Action</th>
-              </tr>
-            </thead>
+          <tbody className="font-body text-sm">
+            {courses.map((course) => {
+              const earnings = Math.floor(
+                course.enrolledStudents.length *
+                  (course.coursePrice - (course.discount * course.coursePrice) / 100)
+              );
 
-            <tbody className="text-sm text-slate-300">
-              {courses.map(course => {
-                const earnings = Math.floor(
-                  course.enrolledStudents.length *
-                    (course.coursePrice -
-                      (course.discount * course.coursePrice) / 100)
-                );
+              return (
+                <tr key={course._id} className="border-b border-brass/30 last:border-0">
+                  <td className="md:px-4 pl-2 md:pl-4 py-3">
+                    <div className="flex items-center space-x-3 truncate">
+                      <img
+                        src={course.courseThumbnail}
+                        alt="Course"
+                        className="w-16 h-16 object-cover border border-brass/60"
+                      />
+                      <span className="truncate hidden md:block text-ink">
+                        {course.courseTitle}
+                      </span>
+                    </div>
+                  </td>
 
-                return (
-                  <tr
-                    key={course._id}
-                    className="
-                      border-b border-slate-800
-                      hover:bg-slate-800/70
-                      transition-colors
-                    "
-                  >
-                    <td className="md:px-4 pl-2 md:pl-4 py-3">
-                      <div className="flex items-center space-x-3 truncate">
-                        <img
-                          src={course.courseThumbnail}
-                          alt="Course"
-                          className="w-16 h-16 rounded-md object-cover border border-slate-700"
-                        />
-                        <span className="truncate hidden md:block">
-                          {course.courseTitle}
-                        </span>
-                      </div>
-                    </td>
+                  <td className="px-4 py-3 text-oxblood font-medium">
+                    {currency}
+                    {earnings}
+                  </td>
 
-                    <td className="px-4 py-3">
-                      {currency}
-                      {earnings}
-                    </td>
+                  <td className="px-4 py-3 text-ink">
+                    {course.enrolledStudents.length}
+                  </td>
 
-                    <td className="px-4 py-3">
-                      {course.enrolledStudents.length}
-                    </td>
+                  <td className="px-4 py-3 text-muted">
+                    {new Date(course.createdAt).toLocaleDateString()}
+                  </td>
 
-                    <td className="px-4 py-3">
-                      {new Date(course.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-3">
-  <button
-    onClick={() => navigate(`/educator/edit-course/${course._id}`)}
-    className="px-3 py-1.5 rounded-md text-sm
-               bg-cyan-500/90 hover:bg-cyan-400
-               text-black transition"
-  >
-    Update
-  </button>
-</td>
-
-                  </tr>
-                );
-              })}
-
-              {courses.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="px-4 py-6 text-center text-slate-500"
-                  >
-                    You haven&apos;t published any courses yet.
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => navigate(`/educator/edit-course/${course._id}`)}
+                      className="font-meta px-4 py-1.5 text-[11px] uppercase border border-oxblood text-oxblood hover:bg-oxblood hover:text-paper transition-colors"
+                    >
+                      Edit
+                    </button>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              );
+            })}
+
+            {courses.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-4 py-8 text-center text-muted font-body">
+                  You haven't published any courses yet.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
-  ) : (
-    <Loading />
-  );
+  </div>
+) : (
+  <Loading />
+);
 };
 
 export default MyCourses;

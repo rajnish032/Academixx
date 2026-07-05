@@ -164,130 +164,138 @@ const AddCourse = () => {
   }, []);
 
   return (
-    <div className="relative h-full overflow-y-auto flex flex-col items-start gap-8 p-4 md:p-8 text-slate-100">
-      {/* glow */}
-      <div className="pointer-events-none absolute -top-16 left-1/2 -translate-x-1/2 h-40 w-72 rounded-full bg-cyan-500/25 blur-3xl" />
-
-      <form
-        onSubmit={handleSubmit}
-        className="relative z-10 flex flex-col gap-4 w-full max-w-3xl
-                   bg-slate-900/80 border border-slate-800 
-                   rounded-2xl shadow-xl shadow-black/40 p-5 md:p-6"
-      >
-        <h1 className="text-xl md:text-2xl font-semibold mb-2 text-white">
+  <div className="relative h-full overflow-y-auto flex flex-col items-start gap-8 p-4 md:p-8 bg-paper text-ink">
+    <form
+      onSubmit={handleSubmit}
+      className="relative z-10 flex flex-col gap-6 w-full max-w-3xl bg-paper-alt border border-navy p-5 md:p-8"
+    >
+      <div>
+        <p className="font-meta text-[10px] uppercase mb-2 text-oxblood">
+          Curriculum Builder
+        </p>
+        <h1 className="font-display font-semibold text-xl md:text-2xl text-navy">
           Add New Course
         </h1>
+      </div>
 
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-slate-200">Course Title</p>
+      <div className="flex flex-col gap-1.5">
+        <label className="font-meta text-[10px] uppercase text-muted">
+          Course Title
+        </label>
+        <input
+          onChange={(e) => setCourseTitle(e.target.value)}
+          value={courseTitle}
+          type="text"
+          placeholder="e.g. Introduction to Machine Learning"
+          required
+          className="font-body outline-none py-2.5 px-3 border border-brass/50 bg-transparent text-ink focus:border-oxblood transition-colors"
+        />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="font-meta text-[10px] uppercase text-muted">
+          Course Description
+        </label>
+        <div
+          ref={editorRef}
+          className="border border-brass/50 bg-paper-alt text-ink"
+        ></div>
+      </div>
+
+      <div className="flex items-start justify-between flex-wrap gap-6">
+        <div className="flex flex-col gap-1.5">
+          <label className="font-meta text-[10px] uppercase text-muted">
+            Course Price
+          </label>
           <input
-            onChange={e => setCourseTitle(e.target.value)}
-            value={courseTitle}
-            type="text"
-            placeholder="Type here"
+            onChange={(e) => setCoursePrice(e.target.value)}
+            value={coursePrice}
+            type="number"
+            placeholder="0"
             required
-            className="outline-none md:py-2.5 py-2 px-3 rounded-lg border border-slate-700 
-                       bg-slate-900 text-slate-100 
-                       focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-500/70 transition"
+            className="font-body outline-none py-2.5 w-28 px-3 border border-brass/50 bg-transparent text-ink focus:border-oxblood transition-colors"
           />
         </div>
 
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-slate-200">Course Description</p>
-          <div
-            ref={editorRef}
-            className="border border-slate-700 rounded-lg bg-slate-900 text-slate-100"
-          ></div>
-        </div>
-
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium text-slate-200">Course Price</p>
-            <input
-              onChange={e => setCoursePrice(e.target.value)}
-              value={coursePrice}
-              type="number"
-              placeholder="0"
-              required
-              className="outline-none md:py-2.5 py-2 w-28 px-3 rounded-lg border border-slate-700 
-                         bg-slate-900 text-slate-100 
-                         focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-500/70 transition"
-            />
-          </div>
-
-          <div className="flex md:flex-row flex-col items-center gap-3">
-            <p className="text-sm font-medium text-slate-200">Course Thumbnail</p>
-            <label htmlFor="thumbnailImage" className="flex items-center gap-3 cursor-pointer">
+        <div className="flex flex-col gap-1.5">
+          <label className="font-meta text-[10px] uppercase text-muted">
+            Course Thumbnail
+          </label>
+          <label htmlFor="thumbnailImage" className="flex items-center gap-3 cursor-pointer">
+            <span className="flex items-center gap-2 px-4 py-2.5 border border-oxblood text-oxblood font-meta text-[11px] uppercase hover:bg-oxblood hover:text-paper transition-colors">
               <img
                 src={assets.file_upload_icon}
                 alt=""
-                className="p-3 bg-cyan-500 hover:bg-cyan-400 transition rounded-lg shadow-md shadow-cyan-500/40"
+                className="w-4 h-4 brightness-0 invert-[0.15] sepia hue-rotate-180"
               />
-              <input
-                type="file"
-                id="thumbnailImage"
-                onChange={e => setImage(e.target.files[0])}
-                accept="image/*"
-                hidden
+              Upload
+            </span>
+            <input
+              type="file"
+              id="thumbnailImage"
+              onChange={(e) => setImage(e.target.files[0])}
+              accept="image/*"
+              hidden
+            />
+            {image && (
+              <img
+                className="max-h-10 border border-brass/50"
+                src={URL.createObjectURL(image)}
+                alt="Course thumbnail"
               />
-              {image && (
-                <img
-                  className="max-h-10 rounded-lg border border-slate-700"
-                  src={URL.createObjectURL(image)}
-                  alt="Course thumbnail"
-                />
-              )}
-            </label>
-          </div>
+            )}
+          </label>
         </div>
+      </div>
 
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-slate-200">Discount %</p>
-          <input
-            onChange={e => setDiscount(e.target.value)}
-            value={discount}
-            type="number"
-            placeholder="0"
-            min={0}
-            max={100}
-            required
-            className="outline-none md:py-2.5 py-2 w-28 px-3 rounded-lg border border-slate-700 
-                       bg-slate-900 text-slate-100 
-                       focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-500/70 transition"
-          />
-        </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="font-meta text-[10px] uppercase text-muted">
+          Discount %
+        </label>
+        <input
+          onChange={(e) => setDiscount(e.target.value)}
+          value={discount}
+          type="number"
+          placeholder="0"
+          min={0}
+          max={100}
+          required
+          className="font-body outline-none py-2.5 w-28 px-3 border border-brass/50 bg-transparent text-ink focus:border-oxblood transition-colors"
+        />
+      </div>
 
-        {/* Chapters & Lectures */}
-        <div className="pt-2 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
+      {/* Chapters & Lectures */}
+      <div className="pt-2 border-t border-brass/40">
+        <p className="font-meta text-[10px] uppercase mt-6 mb-4 text-oxblood">
+          Curriculum
+        </p>
+
+        <div className="max-h-[60vh] overflow-y-auto pr-2 hide-scrollbar space-y-4">
           {chapters.map((chapter, chapterIndex) => (
-            <div
-              key={chapter.chapterId}
-              className="bg-slate-900 border border-slate-800 
-                         rounded-lg mb-4 shadow-sm shadow-black/40"
-            >
-              <div className="flex justify-between items-center p-4 border-b border-slate-800">
-                <div className="flex items-center">
+            <div key={chapter.chapterId} className="border border-navy bg-paper">
+              <div className="flex justify-between items-center p-4 border-b border-brass/30">
+                <div className="flex items-center gap-3">
                   <img
                     onClick={() => handleChapter('toggle', chapter.chapterId)}
                     src={assets.dropdown_icon}
-                    width={14}
+                    width={12}
                     alt=""
-                    className={`mr-2 cursor-pointer transition-transform ${
+                    className={`cursor-pointer transition-transform brightness-0 invert-[0.15] sepia hue-rotate-180 ${
                       chapter.collapsed && '-rotate-90'
                     }`}
                   />
-                  <span className="font-semibold text-sm md:text-base text-slate-100">
+                  <span className="font-display font-semibold text-sm md:text-base text-navy">
                     {chapterIndex + 1}. {chapter.chapterTitle}
                   </span>
                 </div>
-                <span className="text-xs md:text-sm text-slate-400">
+                <span className="font-meta text-[11px] uppercase text-muted">
                   {chapter.chapterContent.length} Lectures
                 </span>
                 <img
                   onClick={() => handleChapter('remove', chapter.chapterId)}
                   src={assets.cross_icon}
                   alt=""
-                  className="cursor-pointer hover:opacity-80 transition"
+                  className="w-3 h-3 cursor-pointer opacity-60 hover:opacity-100 transition-opacity brightness-0 invert-[0.15] sepia hue-rotate-180"
                 />
               </div>
 
@@ -296,164 +304,145 @@ const AddCourse = () => {
                   {chapter.chapterContent.map((lecture, lectureIndex) => (
                     <div
                       key={lecture.lectureId ?? lectureIndex}
-                      className="flex justify-between items-center mb-2 text-sm"
+                      className="flex justify-between items-center py-2 border-b border-brass/20 last:border-0 text-sm font-body"
                     >
-                      <span className="text-slate-200">
-                        {lectureIndex + 1}. {lecture.lectureTitle} -{' '}
-                        {lecture.lectureDuration} mins -{' '}
+                      <span className="text-ink">
+                        {lectureIndex + 1}. {lecture.lectureTitle} —{' '}
+                        {lecture.lectureDuration} mins —{' '}
                         <a
                           href={lecture.lectureUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline"
+                          className="text-oxblood underline-offset-2 hover:underline"
                         >
                           Link
                         </a>{' '}
-                        -{' '}
-                        <span className="font-medium">
+                        —{' '}
+                        <span className="font-semibold">
                           {lecture.isPreviewFree ? 'Free Preview' : 'Paid'}
                         </span>
                       </span>
                       <img
                         src={assets.cross_icon}
                         alt=""
-                        onClick={() =>
-                          handleLecture('remove', chapter.chapterId, lectureIndex)
-                        }
-                        className="cursor-pointer hover:opacity-80 transition"
+                        onClick={() => handleLecture('remove', chapter.chapterId, lectureIndex)}
+                        className="w-3 h-3 cursor-pointer opacity-60 hover:opacity-100 transition-opacity brightness-0 invert-[0.15] sepia hue-rotate-180"
                       />
                     </div>
                   ))}
 
-                  <div
-                    className="inline-flex bg-slate-800/80 text-slate-100 
-                               px-3 py-1.5 rounded cursor-pointer mt-2 text-sm 
-                               hover:bg-slate-700 transition"
+                  <button
+                    type="button"
+                    className="font-meta text-[11px] uppercase text-oxblood mt-3 hover:underline"
                     onClick={() => handleLecture('add', chapter.chapterId)}
                   >
-                    + Add Lectures
-                  </div>
+                    + Add Lecture
+                  </button>
                 </div>
               )}
             </div>
           ))}
 
-          <div
-            className="flex justify-center items-center mt-1
-                       bg-cyan-500/10 text-cyan-300 
-                       px-3 py-2 rounded-lg cursor-pointer 
-                       hover:bg-cyan-500/20 transition text-sm font-medium"
+          <button
+            type="button"
+            className="w-full flex justify-center items-center py-3 border border-dashed border-brass/60 font-meta text-[11px] uppercase text-oxblood hover:bg-paper-alt transition-colors"
             onClick={() => handleChapter('add')}
           >
             + Add Chapter
-          </div>
-
-          {showPopup && (
-            <div className="fixed inset-0 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm z-50">
-              <div className="bg-slate-900 text-slate-200 
-                              p-4 rounded-lg relative w-full max-w-80 
-                              shadow-xl shadow-black/60">
-                <h2 className="text-lg font-semibold mb-4">Add Lecture</h2>
-
-                <div className="mb-2">
-                  <p className="text-sm">Lecture Title</p>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full border border-slate-700 
-                               rounded py-1 px-2 bg-slate-900 
-                               text-slate-100 outline-none 
-                               focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-500/70 transition"
-                    value={lectureDetails.lectureTitle}
-                    onChange={e =>
-                      setLectureDetails({
-                        ...lectureDetails,
-                        lectureTitle: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="mb-2">
-                  <p className="text-sm">Duration (minutes)</p>
-                  <input
-                    type="number"
-                    className="mt-1 block w-full border border-slate-700 
-                               rounded py-1 px-2 bg-slate-900 
-                               text-slate-100 outline-none 
-                               focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-500/70 transition"
-                    value={lectureDetails.lectureDuration}
-                    onChange={e =>
-                      setLectureDetails({
-                        ...lectureDetails,
-                        lectureDuration: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="mb-2">
-                  <p className="text-sm">Lecture URL</p>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full border border-slate-700 
-                               rounded py-1 px-2 bg-slate-900 
-                               text-slate-100 outline-none 
-                               focus:ring-2 focus:ring-cyan-500/70 focus:border-cyan-500/70 transition"
-                    value={lectureDetails.lectureUrl}
-                    onChange={e =>
-                      setLectureDetails({
-                        ...lectureDetails,
-                        lectureUrl: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-
-                <div className="mb-4 flex items-center gap-2">
-                  <p className="text-sm">Is Preview Free?</p>
-                  <input
-                    type="checkbox"
-                    className="mt-1 accent-cyan-500"
-                    checked={lectureDetails.isPreviewFree}
-                    onChange={e =>
-                      setLectureDetails({
-                        ...lectureDetails,
-                        isPreviewFree: e.target.checked,
-                      })
-                    }
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  className="w-full bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2 
-                             rounded-md font-medium transition"
-                  onClick={addLecture}
-                >
-                  Add Lecture
-                </button>
-
-                <img
-                  onClick={() => setShowPopup(false)}
-                  src={assets.cross_icon}
-                  className="absolute top-4 right-4 w-4 cursor-pointer hover:opacity-80 transition"
-                  alt=""
-                />
-              </div>
-            </div>
-          )}
+          </button>
         </div>
 
-        <button
-          type="submit"
-          className="bg-cyan-500 hover:bg-cyan-400 transition text-black 
-                     w-max py-2.5 px-8 rounded-lg my-2 shadow-md shadow-cyan-500/40"
-        >
-          ADD
-        </button>
-      </form>
-    </div>
-  );
+        {showPopup && (
+          <div className="fixed inset-0 flex items-center justify-center bg-navy/50 z-50">
+            <div className="bg-paper-alt border border-navy p-5 relative w-full max-w-80">
+              <h2 className="font-display font-semibold text-lg mb-5 text-navy">
+                Add Lecture
+              </h2>
+
+              <div className="mb-3">
+                <label className="font-meta text-[10px] uppercase text-muted block mb-1">
+                  Lecture Title
+                </label>
+                <input
+                  type="text"
+                  className="font-body block w-full border border-brass/50 bg-transparent py-1.5 px-2 text-ink outline-none focus:border-oxblood transition-colors"
+                  value={lectureDetails.lectureTitle}
+                  onChange={(e) =>
+                    setLectureDetails({ ...lectureDetails, lectureTitle: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="font-meta text-[10px] uppercase text-muted block mb-1">
+                  Duration (minutes)
+                </label>
+                <input
+                  type="number"
+                  className="font-body block w-full border border-brass/50 bg-transparent py-1.5 px-2 text-ink outline-none focus:border-oxblood transition-colors"
+                  value={lectureDetails.lectureDuration}
+                  onChange={(e) =>
+                    setLectureDetails({ ...lectureDetails, lectureDuration: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="font-meta text-[10px] uppercase text-muted block mb-1">
+                  Lecture URL
+                </label>
+                <input
+                  type="text"
+                  className="font-body block w-full border border-brass/50 bg-transparent py-1.5 px-2 text-ink outline-none focus:border-oxblood transition-colors"
+                  value={lectureDetails.lectureUrl}
+                  onChange={(e) =>
+                    setLectureDetails({ ...lectureDetails, lectureUrl: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="mb-5 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  className="accent-oxblood"
+                  checked={lectureDetails.isPreviewFree}
+                  onChange={(e) =>
+                    setLectureDetails({ ...lectureDetails, isPreviewFree: e.target.checked })
+                  }
+                />
+                <label className="font-meta text-[11px] uppercase text-muted">
+                  Free Preview
+                </label>
+              </div>
+
+              <button
+                type="button"
+                className="w-full font-meta text-[11px] uppercase bg-oxblood text-paper py-2.5 hover:bg-[#5F2323] transition-colors"
+                onClick={addLecture}
+              >
+                Add Lecture
+              </button>
+
+              <img
+                onClick={() => setShowPopup(false)}
+                src={assets.cross_icon}
+                className="absolute top-4 right-4 w-3 h-3 cursor-pointer opacity-60 hover:opacity-100 transition-opacity brightness-0 invert-[0.15] sepia hue-rotate-180"
+                alt=""
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        className="font-meta text-[12px] uppercase bg-oxblood text-paper w-max py-3 px-10 mt-2 hover:bg-[#5F2323] transition-colors"
+      >
+        Publish Course
+      </button>
+    </form>
+  </div>
+);
 };
 
 export default AddCourse;

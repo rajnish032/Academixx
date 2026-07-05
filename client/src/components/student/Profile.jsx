@@ -3,97 +3,106 @@ import { assets } from "../../assets/assets";
 import Loading from "./Loading";
 
 const ProfileDrawer = ({ userData, onClose }) => {
-  return  userData ? (
+  const serifDisplay = { fontFamily: "'Fraunces', 'Playfair Display', Georgia, serif" };
+  const serifBody = { fontFamily: "'Source Serif 4', Georgia, serif" };
+  const metaSans = { fontFamily: "'Inter', sans-serif", letterSpacing: "0.08em" };
+
+  return userData ? (
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
+        className="fixed inset-0 z-40"
+        style={{ background: "rgba(29,43,58,0.5)" }}
         onClick={onClose}
       />
 
       {/* Drawer */}
       <div
-        className="
-          fixed top-0 right-0 z-50 h-full w-full sm:w-[380px]
-          bg-black text-white
-          border-l border-white/10
-          shadow-2xl
-          overflow-hidden
-        "
+        className="fixed top-0 right-0 z-50 h-full w-full sm:w-[380px] overflow-hidden"
+        style={{ background: "#F8F5EE", color: "#211F1B", borderLeft: "1px solid #1D2B3A" }}
       >
-        {/* 🔹 Grid background */}
+        {/* Faint rule grid, consistent with rest of site */}
         <div
-          className="
-            pointer-events-none absolute inset-0
-            bg-[radial-gradient(circle_at_1px_1px,#1e293b_1px,transparent_0)]
-            [background-size:24px_24px]
-            opacity-40
-          "
+          className="pointer-events-none absolute inset-0 opacity-[0.3]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#A9823D18 1px, transparent 1px), linear-gradient(90deg, #A9823D18 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+          }}
         />
-
-        {/* 🔹 Glow */}
-        <div className="pointer-events-none absolute -top-32 -right-32 h-64 w-64 
-                        rounded-full bg-cyan-500/25 blur-3xl" />
 
         {/* Content */}
         <div className="relative z-10 p-6 flex flex-col h-full">
           {/* Header */}
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-slate-100">
-              My Profile
-            </h2>
+          <div className="flex justify-between items-center mb-2 pb-4" style={{ borderBottom: "1px solid #A9823D40" }}>
+            <div>
+              <p className="text-[10px] uppercase mb-1" style={{ ...metaSans, color: "#7A2E2E" }}>
+                Student Record
+              </p>
+              <h2 className="text-lg font-semibold" style={{ ...serifDisplay, color: "#1D2B3A" }}>
+                My Profile
+              </h2>
+            </div>
 
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white text-xl transition"
+              className="text-xl transition-colors leading-none"
+              style={{ color: "#6B6355" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#7A2E2E")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#6B6355")}
             >
               ✕
             </button>
           </div>
 
-          {/* Profile Card */}
-          <div
-            className="
-              rounded-xl border border-white/10
-              bg-white/5 backdrop-blur-lg
-              p-5 space-y-4
-              shadow-xl shadow-black/40
-            "
-          >
-            <div>
-              <p className="text-xs text-slate-400">First Name</p>
-              <p className="text-base">{userData.firstName}</p>
+          {/* Profile Card — ledger rows, not a floating card */}
+          <div className="mt-6">
+            <div className="py-4" style={{ borderBottom: "1px solid #A9823D30" }}>
+              <p className="text-[10px] uppercase mb-1" style={{ ...metaSans, color: "#6B6355" }}>
+                First Name
+              </p>
+              <p className="text-base" style={{ ...serifBody, color: "#211F1B" }}>
+                {userData.firstName}
+              </p>
             </div>
 
-            <div>
-              <p className="text-xs text-slate-400">Last Name</p>
-              <p className="text-base">{userData.lastName}</p>
+            <div className="py-4" style={{ borderBottom: "1px solid #A9823D30" }}>
+              <p className="text-[10px] uppercase mb-1" style={{ ...metaSans, color: "#6B6355" }}>
+                Last Name
+              </p>
+              <p className="text-base" style={{ ...serifBody, color: "#211F1B" }}>
+                {userData.lastName}
+              </p>
             </div>
 
-            <div>
-              <p className="text-xs text-slate-400">Email</p>
-              <p className="text-base break-all">
+            <div className="py-4" style={{ borderBottom: "1px solid #A9823D30" }}>
+              <p className="text-[10px] uppercase mb-1" style={{ ...metaSans, color: "#6B6355" }}>
+                Email
+              </p>
+              <p className="text-base break-all" style={{ ...serifBody, color: "#211F1B" }}>
                 {userData.emailId}
               </p>
             </div>
 
-            <div>
-              <p className="text-xs text-slate-400">Role</p>
-              <p className="text-base capitalize text-cyan-400 font-medium">
+            <div className="py-4" style={{ borderBottom: "1px solid #A9823D30" }}>
+              <p className="text-[10px] uppercase mb-1" style={{ ...metaSans, color: "#6B6355" }}>
+                Role
+              </p>
+              <p className="text-base capitalize" style={{ ...serifDisplay, fontWeight: 600, color: "#7A2E2E" }}>
                 {userData.role}
               </p>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="mt-auto pt-6 text-xs text-slate-500">
-            Academix © {new Date().getFullYear()}
+          <div className="mt-auto pt-6 text-[11px]" style={{ ...metaSans, color: "#A39A88" }}>
+            AcademiX © {new Date().getFullYear()}
           </div>
         </div>
       </div>
     </>
   ) : (
-    <Loading/>
+    <Loading />
   );
 };
 

@@ -41,116 +41,106 @@ const Signup = () => {
   };
 
   return (
-  <div className="relative min-h-[calc(100vh-72px)] flex items-center justify-center bg-black text-white overflow-hidden">
-      {/* 🔳 Grid background */}
-      <div
-        className="
-          pointer-events-none absolute inset-0
-          bg-[radial-gradient(circle_at_1px_1px,#1e293b_1px,transparent_0)]
-          [background-size:32px_32px]
-          opacity-40
-        "
-      />
+  <div className="relative min-h-[calc(100vh-72px)] flex items-center justify-center bg-paper text-ink overflow-hidden">
+    {/* Rule grid */}
+    <div
+      className="pointer-events-none absolute inset-0 opacity-30"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(169,130,61,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(169,130,61,0.1) 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
+      }}
+    />
 
-      {/* 🌌 Gradient glows */}
-      <div className="pointer-events-none absolute -top-40 -left-40 w-96 h-96 bg-cyan-500/25 blur-3xl rounded-full" />
-      <div className="pointer-events-none absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-500/25 blur-3xl rounded-full" />
+    {/* Signup Card */}
+    <div className="relative z-10 w-full max-w-md p-8 bg-paper-alt border border-navy">
+      <p className="font-meta text-[10px] uppercase mb-2 text-oxblood text-center">
+        New Enrollment
+      </p>
+      <h2 className="font-display font-semibold text-3xl text-center mb-8 text-navy">
+        Create Your Account
+      </h2>
 
-      {/* 📝 Signup Card */}
-      <div
-        className="
-          relative z-10 w-full max-w-md p-8 rounded-2xl
-          bg-white/5 backdrop-blur-xl border border-white/10
-          shadow-[0_0_40px_rgba(0,0,0,0.7)]
-        "
-      >
-        <h2 className="text-3xl font-semibold text-center mb-6">
-          Create Account 🚀
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-3">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex gap-3">
+          <div className="w-1/2">
+            <label className="font-meta text-[10px] uppercase text-muted block mb-1.5">
+              First Name
+            </label>
             <input
               type="text"
               name="firstName"
-              placeholder="First Name"
+              placeholder="Jane"
               value={formData.firstName}
               onChange={handleChange}
               required
-              className="
-                w-1/2 px-4 py-3 rounded-lg bg-black/40
-                border border-white/10 text-white
-                focus:outline-none focus:ring-2 focus:ring-cyan-500
-              "
-            />
-
-            <input
-              type="text"
-              name="lastName"
-              placeholder="Last Name"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-              className="
-                w-1/2 px-4 py-3 rounded-lg bg-black/40
-                border border-white/10 text-white
-                focus:outline-none focus:ring-2 focus:ring-cyan-500
-              "
+              className="font-body w-full px-4 py-3 bg-transparent border border-brass/50 text-ink outline-none focus:border-oxblood transition-colors"
             />
           </div>
 
+          <div className="w-1/2">
+            <label className="font-meta text-[10px] uppercase text-muted block mb-1.5">
+              Last Name
+            </label>
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Doe"
+              value={formData.lastName}
+              onChange={handleChange}
+              required
+              className="font-body w-full px-4 py-3 bg-transparent border border-brass/50 text-ink outline-none focus:border-oxblood transition-colors"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="font-meta text-[10px] uppercase text-muted block mb-1.5">
+            Email Address
+          </label>
           <input
             type="email"
             name="emailId"
-            placeholder="Email address"
+            placeholder="you@example.com"
             value={formData.emailId}
             onChange={handleChange}
             required
-            className="
-              w-full px-4 py-3 rounded-lg bg-black/40
-              border border-white/10 text-white
-              focus:outline-none focus:ring-2 focus:ring-cyan-500
-            "
+            className="font-body w-full px-4 py-3 bg-transparent border border-brass/50 text-ink outline-none focus:border-oxblood transition-colors"
           />
+        </div>
 
+        <div>
+          <label className="font-meta text-[10px] uppercase text-muted block mb-1.5">
+            Password
+          </label>
           <input
             type="password"
             name="password"
-            placeholder="Password"
+            placeholder="••••••••"
             value={formData.password}
             onChange={handleChange}
             required
-            className="
-              w-full px-4 py-3 rounded-lg bg-black/40
-              border border-white/10 text-white
-              focus:outline-none focus:ring-2 focus:ring-cyan-500
-            "
+            className="font-body w-full px-4 py-3 bg-transparent border border-brass/50 text-ink outline-none focus:border-oxblood transition-colors"
           />
+        </div>
 
-          <button
-            type="submit"
-            className="
-              w-full py-3 rounded-lg bg-cyan-500 text-black
-              font-semibold hover:bg-cyan-400 transition
-              shadow-md shadow-cyan-500/30
-            "
-          >
-            Signup
-          </button>
-        </form>
+        <button
+          type="submit"
+          className="font-meta w-full py-3 text-[12px] uppercase bg-oxblood text-paper hover:bg-[#5F2323] transition-colors mt-2"
+        >
+          Create Account
+        </button>
+      </form>
 
-        <p className="text-sm text-center mt-5 text-gray-300">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-cyan-400 hover:text-cyan-300 transition font-medium"
-          >
-            Login
-          </Link>
-        </p>
-      </div>
+      <p className="font-body text-sm text-center mt-6 text-muted">
+        Already have an account?{" "}
+        <Link to="/login" className="text-oxblood hover:underline font-medium">
+          Log in
+        </Link>
+      </p>
     </div>
-  );
+  </div>
+);
 };
 
 export default Signup;
