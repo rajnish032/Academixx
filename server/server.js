@@ -11,7 +11,7 @@ import authRouter from "./routes/auth.js";
 import educatorRouter from "./routes/educatorRoutes.js";
 import courseRouter from "./routes/course.js";
 import userRouter from "./routes/user.js";
-
+import feedRouter from "./routes/feed.route.js";
 const app = express();
 
 await connectDB();
@@ -39,6 +39,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/educator", educatorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
+app.use("/api", feedRouter);
 
 const PORT = process.env.PORT || 8080;
 

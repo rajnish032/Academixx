@@ -20,6 +20,7 @@ import Login from './pages/auth/Login.jsx';
 import Signup from './pages/auth/SignUp.jsx';
 import EditCourse from './pages/educator/EditCourse.jsx';
 import { AboutUs, CancellationAndRefund, ContactUs, PrivacyPolicy, TermsAndConditions } from './components/student/LegalPages.jsx';
+import Feed from './components/feed/feed.jsx';
 
 
 // Protects routes for logged-in users
@@ -57,6 +58,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
+        
+
         <Route path="/terms" element={<TermsAndConditions />} />
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/contact" element={<ContactUs />} />
@@ -64,7 +67,17 @@ const App = () => {
         <Route path="/about" element={<AboutUs />} />
         
         <Route path="/my-enrollments" element={<PrivateRoute><MyEnrollment /></PrivateRoute> }/>
+
         <Route path="/player/:courseId" element={ <PrivateRoute> <Player /> </PrivateRoute>}/>
+
+        <Route
+  path="/feed"
+  element={
+    <PrivateRoute>
+      <Feed />
+    </PrivateRoute>
+  }
+/>
          
 
         <Route path="/educator" element={ <EducatorRoute> <Educator /> </EducatorRoute> }>

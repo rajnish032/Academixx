@@ -84,6 +84,16 @@ const Navbar = () => {
         <div className="relative z-50 hidden md:flex items-center gap-7">
           {userData ? (
             <>
+              <Link
+                to="/feed"
+                className="text-sm transition-colors"
+                style={{ ...metaSans, color: "#1D2B3A" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#7A2E2E")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#1D2B3A")}
+              >
+                Share Your Learning
+              </Link>
+
               <button
                 onClick={becomeEducator}
                 className="text-sm transition-colors"
@@ -179,6 +189,15 @@ const Navbar = () => {
                 >
                   Hi, {userData.firstName}
                 </div>
+
+                <Link
+                  to="/feed"
+                  onClick={() => setMobileMenu(false)}
+                  className="block px-4 py-3 text-sm"
+                  style={{ ...metaSans, fontSize: "13px", color: "#1D2B3A", borderBottom: "1px solid #A9823D30" }}
+                >
+                  Share Your Learning
+                </Link>
 
                 <button
                   onClick={() => {

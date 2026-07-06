@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    avatar: {
+      type: String,
+      default: "",
+    },
 
     password: {
       type: String,
@@ -31,7 +35,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["student","pending", "educator", "admin"],
+      enum: ["student", "pending", "educator", "admin"],
       default: "student",
     },
 
@@ -42,16 +46,14 @@ const userSchema = new mongoose.Schema(
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 /* ================= JWT ================= */
 userSchema.methods.getJWT = function () {
-  return jwt.sign(
-    { _id: this._id, role: this.role },
-    process.env.JWT_SECRET,
-    { expiresIn: "8h" }
-  );
+  return jwt.sign({ _id: this._id, role: this.role }, process.env.JWT_SECRET, {
+    expiresIn: "8h",
+  });
 };
 
 /* ================= PASSWORD CHECK ================= */
