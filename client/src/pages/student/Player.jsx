@@ -395,7 +395,7 @@ const Player = () => {
 
                         <div
                           className={`transition-all duration-300 ease-in-out ${
-                            openSections[index] ? "max-h-[1000px]" : "max-h-0"
+                            openSections[index] ? "max-h-[10000px]" : "max-h-0"
                           } overflow-hidden`}
                         >
                           <ul className="pb-3 pl-11">
